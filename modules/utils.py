@@ -13,45 +13,6 @@ def read_csv(path):
     return small_df
 
 
-""" Custom icon
-from folium.features import CustomIcon
-
-
-m = folium.Map(location=[45.372, -121.6972], zoom_start=12, tiles="Stamen Terrain")
-
-url = "http://leafletjs.com/examples/custom-icons/{}".format
-icon_image = url("leaf-red.png")
-shadow_image = url("leaf-shadow.png")
-
-icon = CustomIcon(
-    icon_image,
-    icon_size=(38, 95),
-    icon_anchor=(22, 94),
-    shadow_image=shadow_image,
-    shadow_size=(50, 64),
-    shadow_anchor=(4, 62),
-    popup_anchor=(-3, -76),
-)
-
-"""
-
-# from folium.features import GeoJsonPopup, GeoJsonTooltip
-# tooltip = GeoJsonTooltip(
-#     fields=["name", "medianincome", "change"],
-#     aliases=["State:", "2015 Median Income(USD):", "Median % Change:"],
-#     localize=True,
-#     sticky=False,
-#     labels=True,
-#     style="""
-#         background-color: #F0EFEF;
-#         border: 2px solid black;
-#         border-radius: 3px;
-#         box-shadow: 3px;
-#     """,
-#     max_width=800,
-# )
-
-
 def add_markers(map, df):
     cordinates = [i for i in zip(df.name, df.lat, df.lng)]
 
