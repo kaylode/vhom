@@ -1,16 +1,5 @@
 function onClick(e) {
+  $("#float_panel").show();
+  document.getElementById("map_ae2b4fd64e2a41e6a0f28c228b3ad9ed").style.marginLeft = "25%";
   console.log(this.getLatLng());
-}
-
-function w3_open() {
-    document.getElementById("main").style.marginLeft = "25%";
-    document.getElementById("mySidebar").style.width = "25%";
-    document.getElementById("mySidebar").style.display = "block";
-    document.getElementById("openNav").style.display = 'none';
-  }
-  
-function w3_close() {
-document.getElementById("main").style.marginLeft = "0%";
-document.getElementById("mySidebar").style.display = "none";
-document.getElementById("openNav").style.display = "inline-block";
 }
