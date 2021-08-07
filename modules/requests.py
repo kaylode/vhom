@@ -92,10 +92,10 @@ def add_custom_files(map):
 
     html_body = '''
     <div class="w3-bar w3-blue">
-        <a href="#" class="w3-bar-item w3-button w3-mobile w3-large">Home</a>
-        <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large">About</a>
-        <input type="text" class="w3-bar-item w3-input" placeholder="Search..">
-        <a href="#" class="w3-bar-item w3-button w3-green">Go</a>
+        <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right">Home</a>
+        <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right">About</a>
+        <input type="text" class="w3-bar-item w3-input w3-right" placeholder="Search..">
+        <a href="#" class="w3-bar-item w3-button w3-green w3-right">Go</a>
     </div>        
     '''
     map.get_root().html.add_child(Element(html_body))
