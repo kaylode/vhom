@@ -8,7 +8,6 @@ import pandas as pd
 
 from .utils import read_csv, add_markers
 
-
 def request_data(url):
     """
     Send request data and convert format
@@ -63,7 +62,7 @@ def get_map(location=[16.3, 106.72], zoom_start=6):
     """
     Get map, init with location and zoom
     """
-    from .constant import OVERLAY_PATH, CORDINATE_PATH, STATICS_DIR
+    from .constant import OVERLAY_PATH, CORDINATE_PATH, TEMPLATE_DIR
 
     # Init map
     my_map = folium.Map(location=location, zoom_start=zoom_start)
@@ -77,6 +76,24 @@ def get_map(location=[16.3, 106.72], zoom_start=6):
 
 
     folium.LayerControl().add_to(my_map)
-    my_map.save(os.path.join(STATICS_DIR,"index.html"))
+
+    add_custom_files(my_map)
+    my_map.save(os.path.join(TEMPLATE_DIR,"index.html"))
 
     return my_map
+
+def add_custom_files(map):
+    from branca.element import CssLink, JavascriptLink, Element
+    
+    map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
+    # map.get_root().html.add_child(JavascriptLink('./static/js.js'))
+
+    html_body = '''
+    <div class="topnav">
+        <a class="active" href="#home">Home</a>
+        <a href="#news">News</a>
+        <a href="#contact">Contact</a>
+        <a href="#about">About</a>
+    </div>
+    '''
+    map.get_root().html.add_child(Element(html_body))
