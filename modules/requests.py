@@ -86,14 +86,16 @@ def add_custom_files(map):
     from branca.element import CssLink, JavascriptLink, Element
     
     map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
-    # map.get_root().html.add_child(JavascriptLink('./static/js.js'))
+    map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/w3.css') }}"))
+    map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/w3.js') }}"))
+    map.get_root().header.add_child(JavascriptLink("{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"))
 
     html_body = '''
-    <div class="topnav">
-        <a class="active" href="#home">Home</a>
-        <a href="#news">News</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
-    </div>
+    <div class="w3-bar w3-blue">
+        <a href="#" class="w3-bar-item w3-button w3-mobile w3-large">Home</a>
+        <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large">About</a>
+        <input type="text" class="w3-bar-item w3-input" placeholder="Search..">
+        <a href="#" class="w3-bar-item w3-button w3-green">Go</a>
+    </div>        
     '''
     map.get_root().html.add_child(Element(html_body))
