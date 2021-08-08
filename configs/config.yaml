@@ -1,2 +1,9 @@
 settings:
-  
+    location: [16.3, 106.72]
+    zoom: 6
+    overlay:   './data/geojson/vietnam.geojson'
+    cordinates: './data/csv/vn_provinces.csv'
+
+    template_dir:   './templates'
+    static_dir:     './static'
+    # icon_path: 
