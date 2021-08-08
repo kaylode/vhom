@@ -87,8 +87,11 @@ def add_custom_files(map):
     
     map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
     map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/w3.css') }}"))
-    map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/w3.js') }}"))
+    map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/functions.js') }}"))
     map.get_root().header.add_child(JavascriptLink("{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"))
+    map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega@5"))
+    map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega-lite@5"))
+    map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega-embed@6"))
 
     html_body = '''
     <div class="w3-bar w3-blue">
@@ -97,5 +100,11 @@ def add_custom_files(map):
         <input type="text" class="w3-bar-item w3-input w3-right" placeholder="Search..">
         <a href="#" class="w3-bar-item w3-button w3-green w3-right">Go</a>
     </div>        
+
+    <div class="div_float" id="float_panel">
+        <span id='close'>x</span>
+        <div id="vis"></div>
+    </div>
+
     '''
     map.get_root().html.add_child(Element(html_body))
