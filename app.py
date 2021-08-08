@@ -1,14 +1,18 @@
+import os
+from modules import MyMap
+from configs import Config
+from modules.utils import request_data
 from flask import Flask, render_template
-import folium
-from modules import get_map, request_data
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+map_config = Config('./configs/config.yaml')
+
 @app.route('/map')
 def map():
-    folium_map = get_map()
-    # return folium_map._repr_html_()
+    folium_map = MyMap(map_config)
+    folium_map.save_html(os.path.join(map_config.template_dir,"index.html"))
     return render_template("index.html")
 
 @app.route('/')
@@ -34,3 +38,4 @@ def add_header(r):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

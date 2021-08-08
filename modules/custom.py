@@ -3,7 +3,7 @@ from jinja2 import Template
 
 
 class OnClickMarker(folium.Marker):
-    def __init__(self, location=None, popup=None, tooltip=None, icon=None,
+    def __init__(self, location=None, popup=None, tooltip=None, icon=None, 
                  draggable=False, on_click=None, **kwargs):
         super().__init__(location=location, popup=popup, tooltip=tooltip, icon=icon, draggable=draggable, **kwargs)
         self.on_click = on_click
