@@ -6,7 +6,28 @@ import requests
 import numpy as np
 import pandas as pd
 
-from .utils import read_csv, add_markers
+from .custom import OnClickMarker
+
+def read_csv(path):
+    df = pd.read_csv(path)
+    small_df = df[['admin_name', 'lat', 'lng',  'population']]
+    small_df.columns = ['name', 'lat', 'lng',  'population']
+    small_df = small_df.dropna()
+    small_df = small_df.drop_duplicates(['name'])
+    return small_df
+
+
+def add_markers(map, df):
+    cordinates = [i for i in zip(df.name, df.lat, df.lng)]
+
+    for name, lat, long in cordinates:
+
+        # popup = get_vega_popup(json.load(open('./static/data/bar2.json','r')))
+        OnClickMarker(
+            location=[lat, long],
+            popup=name,
+            on_click="onClick"
+        ).add_to(map)
 
 def request_data(url):
     """
@@ -28,10 +49,12 @@ def request_data(url):
 
     # Convert it to JSON.
     scatter_json = line_chart.to_json()
-        
+    return scatter_json
+
+def get_vega_popup(json):
     # Let's create a Vega popup based on scatter_json.
-    popup = folium.Popup(max_width=0)
-    folium.Vega(scatter_json, height=350, width=650).add_to(popup)
+    popup = folium.Popup(max_width=450)
+    popup.add_child(folium.Vega(json, width=450, height=250))
     return popup
 
 def get_icon():
@@ -66,7 +89,7 @@ def get_map(location=[16.3, 106.72], zoom_start=6):
 
     # Init map
     my_map = folium.Map(location=location, zoom_start=zoom_start)
-
+    
     # add provinces overlay
     folium.GeoJson(OVERLAY_PATH, name="geojson").add_to(my_map)
 
@@ -74,10 +97,8 @@ def get_map(location=[16.3, 106.72], zoom_start=6):
     df = read_csv(CORDINATE_PATH)
     add_markers(my_map, df)
 
-
-    folium.LayerControl().add_to(my_map)
-
     add_custom_files(my_map)
+    folium.LayerControl().add_to(my_map)
     my_map.save(os.path.join(TEMPLATE_DIR,"index.html"))
 
     return my_map
