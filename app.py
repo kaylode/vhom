@@ -1,8 +1,9 @@
+import json
 import os
 from modules import MyMap
 from configs import Config
 from modules.utils import request_data
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -23,6 +24,12 @@ def index():
 def request():
     data = request_data('http://192.168.100.16:4000/api/request')
     return data
+
+@app.route('/data/tp', defaults={'subject' : 'Flask'})
+def data(subject):
+    # page = request.args.get('page', default = 1, type = int)
+    j = json.load(open('./static/data/bar.json'))
+    return jsonify(j)
 
 @app.after_request
 def add_header(r):
