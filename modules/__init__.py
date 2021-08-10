@@ -85,10 +85,10 @@ class MyMap:
             <span id='close'>x</span><br>
             <p class="w3-sans-serif">Biểu đồ phân tích mực nước</p>
             <div class="w3-dropdown-hover">
-            <button class="w3-button w3-green">Mực nước theo thời gian </button>
+            <button id="dropdown" class="w3-button w3-green">▼ Biểu đồ 1</button>
                 <div class="w3-dropdown-content w3-bar-block w3-card-4">
-                    <a href="#" id="type1" class="w3-bar-item w3-button">Loại 1</a>
-                    <a href="#" id="type2" class="w3-bar-item w3-button">Loại 2</a>
+                    <a href="#" id="type1" class="w3-bar-item w3-button">Biểu đồ 1</a>
+                    <a href="#" id="type2" class="w3-bar-item w3-button">Biểu đồ 2</a>
                 </div>
             </div>
             <br>

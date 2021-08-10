@@ -20,6 +20,15 @@ function changeMarkerIconColor(object, color) {
     return object;
 }
 
+String.format = function() {
+    var s = arguments[0];
+    for (var i = 0; i < arguments.length - 1; i += 1) {
+        var reg = new RegExp('\\{' + i + '\\}', 'gm');
+        s = s.replace(reg, arguments[i + 1]);
+    }
+    return s;
+};
+
 function onMarkerClick(e) {
     /*
         On click event of leaflet markers (call by server)
@@ -27,9 +36,18 @@ function onMarkerClick(e) {
 
     // Show Panel on the right, to add VEGA plot
     $("#float_panel").show();
+    $("#float_panel2").show();
 
     // Add VEGA plot
     getVEGAPlot(dataUrl, '#vis');
+
+    // Add city info
+    var cordinate = this.getLatLng();
+    let lat =  String(cordinate.lat);
+    let lng =  String(cordinate.lng);
+    var content = String.format('&emsp;<strong>Vĩ độ</strong>: {0} <br> &emsp;<strong>Kinh độ</strong>: {1}', lat, lng);
+    
+    setContentText('city-info', content);
 
     // Turn off current clicked marker, color new marker
     if (clicked_object) {
@@ -45,6 +63,7 @@ function onCloseClick(){
 
     // Hide VEGA plot
     $("#float_panel").hide();
+    $("#float_panel2").hide();
 
     if (clicked_object) {
         changeMarkerIconColor(clicked_object, 'blue');
@@ -75,11 +94,28 @@ function initFloatingDiv() {
 
     document.getElementById('type1').onclick = function(){
         getVEGAPlot(dataUrl, '#vis');
+        setContentText('dropdown', '▼ Biểu đồ 1');
     }
 
     document.getElementById('type2').onclick = function(){
         getVEGAPlot(dataUrl, '#vis');
+        setContentText('dropdown', '▼ Biểu đồ 2');
     }
+
+    $('#float_panel2').css({
+        "float":"right",
+        "top": "60%",
+        "left": "70%",
+        "color": "black",
+        "background-color": "white",
+        "width":"25%",
+        "text-align": "justify"
+    });
+
+}
+
+function setContentText(id, text) {
+    document.getElementById(id).innerHTML = text;
 }
 
 function visualization(div, json_data){
