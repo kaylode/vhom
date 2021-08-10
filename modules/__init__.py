@@ -37,15 +37,12 @@ class MyMap:
         Add pre-defined markers to map
         """
 
-        if icon is not None:
-            icon = get_icon(icon)
-
         for name, lat, long in cordinates:
             # popup = get_vega_popup(json.load(open('./static/data/bar2.json','r')))
             marker = OnClickMarker(
                 location=[lat, long],
                 popup=name,
-                icon=icon,
+                icon=get_icon(icon, icon_color='blue'),
                 on_click="onClick")
             marker.add_to(self.map)
 
@@ -60,9 +57,10 @@ class MyMap:
         """
         Add JavaScript libraries, CSS files
         """
+        from .custom import CustomJavaScript
         self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
         self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/w3.css') }}"))
-        self.map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/functions.js') }}"))
+        self.map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/main.js') }}"))
         self.map.get_root().header.add_child(JavascriptLink("{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"))
         self.map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega@5"))
         self.map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega-lite@5"))
