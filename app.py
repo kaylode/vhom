@@ -3,11 +3,10 @@ import os
 from modules import MyMap
 from configs import Config
 from modules.utils import request_data
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-
 map_config = Config('./configs/config.yaml')
 
 @app.route('/map')
@@ -20,15 +19,16 @@ def map():
 def index():
     return render_template("index.html")
 
-@app.route('/data')
-def request():
-    data = request_data('http://192.168.100.16:4000/api/request')
-    return data
+# @app.route('/data')
+# def request():
+#     data = request_data('http://192.168.100.16:4000/api/request')
+#     return data
 
-@app.route('/data/tp', defaults={'subject' : 'Flask'})
-def data(subject):
-    # page = request.args.get('page', default = 1, type = int)
+@app.route('/data')
+def data():
+    plot_type = request.args.get('type', default = 'bar', type = str)
     j = json.load(open('./static/data/bar.json'))
+    j['mark'] = plot_type
     return jsonify(j)
 
 @app.after_request

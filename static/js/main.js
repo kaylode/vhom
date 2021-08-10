@@ -1,6 +1,7 @@
 // Global variables
 
-const dataUrl = 'http://127.0.0.1:5000/data/tp';  // Data request URL
+const dataUrl = 'http://127.0.0.1:5000/data?type=bar';  // Data request URL
+const dataUrl2 = 'http://127.0.0.1:5000/data?type=line';  // Data request URL
 let clicked_object = null;                        // clicked marker
 var map_id = null;                                // Leaflet Map ID
 
@@ -20,20 +21,22 @@ function changeMarkerIconColor(object, color) {
     return object;
 }
 
-String.format = function() {
-    var s = arguments[0];
-    for (var i = 0; i < arguments.length - 1; i += 1) {
-        var reg = new RegExp('\\{' + i + '\\}', 'gm');
-        s = s.replace(reg, arguments[i + 1]);
+function getContentFromDict(dict) {
+    /*
+        Get data sent with on click marker
+    */
+    var content = "";
+    for (const [key, value] of Object.entries(dict)) {
+        content = content.concat(`&emsp; <strong>${key}</strong>: ${value}<br>`);
     }
-    return s;
-};
+    console.log(content);
+    return content;
+}
 
-function onMarkerClick(e) {
+function onMarkerClick(e, dict) {
     /*
         On click event of leaflet markers (call by server)
     */
-
     // Show Panel on the right, to add VEGA plot
     $("#float_panel").show();
     $("#float_panel2").show();
@@ -42,18 +45,14 @@ function onMarkerClick(e) {
     getVEGAPlot(dataUrl, '#vis');
 
     // Add city info
-    var cordinate = this.getLatLng();
-    let lat =  String(cordinate.lat);
-    let lng =  String(cordinate.lng);
-    var content = String.format('&emsp;<strong>Vĩ độ</strong>: {0} <br> &emsp;<strong>Kinh độ</strong>: {1}', lat, lng);
-    
+    content = getContentFromDict(dict);
     setContentText('city-info', content);
 
     // Turn off current clicked marker, color new marker
     if (clicked_object) {
         changeMarkerIconColor(clicked_object, 'blue');
     }
-    clicked_object = changeMarkerIconColor(this, 'green');
+    clicked_object = changeMarkerIconColor(e.target, 'green');
 }
 
 function onCloseClick(){
@@ -98,7 +97,7 @@ function initFloatingDiv() {
     }
 
     document.getElementById('type2').onclick = function(){
-        getVEGAPlot(dataUrl, '#vis');
+        getVEGAPlot(dataUrl2, '#vis');
         setContentText('dropdown', '▼ Biểu đồ 2');
     }
 

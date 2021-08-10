@@ -39,11 +39,21 @@ class MyMap:
 
         for name, lat, long in cordinates:
             # popup = get_vega_popup(json.load(open('./static/data/bar2.json','r')))
+            
+            # Data with each marker, when clicked, client receive 
+            marker_data = {
+                'Thành phố': name,
+                'Kinh độ': str(long),
+                'Vĩ độ': str(lat),
+            }
+
             marker = OnClickMarker(
                 location=[lat, long],
                 popup=name,
                 icon=get_icon(icon, icon_color='blue'),
-                on_click="onMarkerClick")
+                on_click="onMarkerClick",
+                on_click_data=marker_data)
+
             marker.add_to(self.map)
 
     def save_html(self, path):
