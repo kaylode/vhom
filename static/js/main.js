@@ -20,28 +20,66 @@ function changeMarkerIconColor(object, color) {
     return object;
 }
 
-function onClick(e) {
+function onMarkerClick(e) {
     /*
         On click event of leaflet markers (call by server)
     */
 
-    // Find div contains map, margin left
-    document.getElementById(map_id).style.marginLeft = "25%";
-
-    // Show Panel on the left, to add VEGA plot
+    // Show Panel on the right, to add VEGA plot
     $("#float_panel").show();
-    $("#float_panel").css("width", "25%");
-    $("#float_panel").css("height", "100%");
 
     // Add VEGA plot
-    response = httpGet(dataUrl);
-    visualization('#vis', JSON.parse(response));
+    getVEGAPlot(dataUrl, '#vis');
 
     // Turn off current clicked marker, color new marker
     if (clicked_object) {
         changeMarkerIconColor(clicked_object, 'blue');
     }
     clicked_object = changeMarkerIconColor(this, 'green');
+}
+
+function onCloseClick(){
+    /*
+        On click event for close button
+    */
+
+    // Hide VEGA plot
+    $("#float_panel").hide();
+
+    if (clicked_object) {
+        changeMarkerIconColor(clicked_object, 'blue');
+    }
+    clicked_object = null;
+}
+
+function getVEGAPlot(url, id) {
+    /*
+        Send get request and plot VEGA
+    */
+    response = httpGet(url);
+    visualization(id, JSON.parse(response));
+}
+
+function initFloatingDiv() {
+    /*
+        Set custom DIV and dropdowns
+    */
+    $('#float_panel').css({
+        "float":"right",
+        "top": "10%",
+        "left": "70%",
+        "color": "red",
+        "background-color": "white",
+        "width":"25%",
+    });
+
+    document.getElementById('type1').onclick = function(){
+        getVEGAPlot(dataUrl, '#vis');
+    }
+
+    document.getElementById('type2').onclick = function(){
+        getVEGAPlot(dataUrl, '#vis');
+    }
 }
 
 function visualization(div, json_data){
@@ -60,9 +98,10 @@ window.onload = function(){
     map_id = document.getElementsByClassName('folium-map')[0].id;
 
     // Set on click event for close button
-    document.getElementById('close').onclick = function(){
-        document.getElementById(map_id).style.marginLeft = "0%";
-    };
+    document.getElementById('close').onclick = onCloseClick;
+    
+    // Initialize floating div
+    initFloatingDiv();
 };
 
 function httpGet(url){

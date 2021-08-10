@@ -43,7 +43,7 @@ class MyMap:
                 location=[lat, long],
                 popup=name,
                 icon=get_icon(icon, icon_color='blue'),
-                on_click="onClick")
+                on_click="onMarkerClick")
             marker.add_to(self.map)
 
     def save_html(self, path):
@@ -74,15 +74,30 @@ class MyMap:
         
         html_body = '''
         <div class="w3-bar w3-blue">
-            <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right">Home</a>
-            <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right">About</a>
+            <a href="#" class="w3-bar-item w3-mobile w3-yellow w3-middle w3-large">Vietnam Water level map</a>
+            <a href="#" class="w3-bar-item w3-button w3-hover-green w3-right"><i class="fa fa-search"></i></a>
             <input type="text" class="w3-bar-item w3-input w3-right" placeholder="Search..">
-            <a href="#" class="w3-bar-item w3-button w3-green w3-right">Go</a>
+            <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-envelope"></i></a>
+            <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-home"></i></a>
         </div>        
 
         <div class="div_float" id="float_panel">
-            <span id='close'>x</span>
+            <span id='close'>x</span><br>
+            <p class="w3-sans-serif">Biểu đồ phân tích mực nước</p>
+            <div class="w3-dropdown-hover">
+            <button class="w3-button w3-green">Mực nước theo thời gian </button>
+                <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                    <a href="#" id="type1" class="w3-bar-item w3-button">Loại 1</a>
+                    <a href="#" id="type2" class="w3-bar-item w3-button">Loại 2</a>
+                </div>
+            </div>
+            <br>
             <div id="vis"></div>
+            
+        </div>
+
+        <div class="div_float" id="float_panel2">
+        <p id="city-info"></p>
         </div>
 
         '''

@@ -27,23 +27,26 @@
 }
 
 .div_float {
-  position:fixed;
-  top: 50px;;
+  position:absolute;
+  z-index: 9999;
+  border-radius: 15px 50px 30px;
   overflow: hidden;
-  color: red;
   display:none;
-  background-color: white;
+  text-align: center;
 }
 
 #close {
-    float:right;
+    left: 30%;
+    border-radius: 50%;
     display:inline-block;
     padding:2px 5px;
     background:#ccc;
 }
 
 #close:hover {
-    float:right;
+    left: 30%;
+    cursor: pointer;
+    border-radius: 50%;
     display:inline-block;
     padding:2px 5px;
     background:#ccc;
