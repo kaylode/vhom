@@ -17,3 +17,16 @@ class OnClickMarker(folium.Marker):
         {% endmacro %}
         """)
     
+class CustomJavaScript(folium.JavascriptLink):
+    def __init__(self, url, type=None, download=False):
+        super().__init__(url, download=download)
+        self.type = type
+
+        if type is not None:
+            self._template = Template(
+                '{% if kwargs.get("embedded",False) %}'
+                '<script>{{this.get_code()}}</script>'
+                '{% else %}'
+                '<script type="{{this.type}}" src="{{this.url}}"></script>'
+                '{% endif %}'
+            )
