@@ -10,27 +10,30 @@ app_config = Config('./configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
 
-@app.route('/map')
-def map():
-    folium_map = MyMap(map_config)
-    folium_map.save_html(os.path.join(map_config.template_dir,"index.html"))
-    return render_template("index.html")
+api = MyAPI(api_config)
 
 @app.route('/')
-def index():
+def map():
+    folium_map = MyMap(map_config)
+    folium_map.save_html(os.path.join(map_config['template_dir'],"index.html"))
     return render_template("index.html")
 
 @app.route('/data')
-def request():
-    api = MyAPI(api_config)
-    return data
+def data():
+    plot_type = request.args.get('type', default = 'hourly', type = str)
+    json_graph = api._convert_db_to_graph('tvlongdinh', type=plot_type)
+    return jsonify(json_graph)
 
-# @app.route('/data')
-# def data():
-#     plot_type = request.args.get('type', default = 'bar', type = str)
-#     j = json.load(open('./static/data/bar.json'))
-#     j['mark'] = plot_type
-#     return jsonify(j)
+@app.route('/request')
+def requests():
+    
+    api.crawl_data(
+        camera_ids=['tvlongdinh', 'tvmytho'],
+        from_date='2021-09-03',
+    )
+    return jsonify({
+        '202': 'Successfully crawled'
+    })
 
 @app.after_request
 def add_header(r):

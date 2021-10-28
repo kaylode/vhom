@@ -8,7 +8,7 @@ import pandas as pd
 
 def process_df(path):
     df = pd.read_csv(path)
-    small_df = df[['admin_name', 'lat', 'lng',  'population']]
+    small_df = df[['city', 'lat', 'lng',  'population']]
     small_df.columns = ['name', 'lat', 'lng',  'population']
     small_df = small_df.dropna()
     small_df = small_df.drop_duplicates(['name'])
