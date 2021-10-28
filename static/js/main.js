@@ -1,9 +1,9 @@
 // Global variables
 
-const dataUrl = 'http://127.0.0.1:5000/data?type=hourly';  // Data request URL
-const dataUrl2 = 'http://127.0.0.1:5000/data?type=daily';  // Data request URL
+const dataUrl = new URL('http://127.0.0.1:5000/data');  // Data request URL
 let clicked_object = null;                        // clicked marker
 var map_id = null;                                // Leaflet Map ID
+var camera_id = null;
 
 
 function changeMarkerIconColor(object, color) {
@@ -29,7 +29,6 @@ function getContentFromDict(dict) {
     for (const [key, value] of Object.entries(dict)) {
         content = content.concat(`&emsp; <strong>${key}</strong>: ${value}<br>`);
     }
-    console.log(content);
     return content;
 }
 
@@ -41,8 +40,11 @@ function onMarkerClick(e, dict) {
     $("#float_panel").show();
     $("#float_panel2").show();
 
+    // Set camera id
+    camera_id = dict['Camera id'];
+
     // Add VEGA plot
-    getVEGAPlot(dataUrl, '#vis');
+    getVEGAPlot(dataUrl, '#vis', 'hourly');
 
     // Add city info
     content = getContentFromDict(dict);
@@ -70,10 +72,13 @@ function onCloseClick(){
     clicked_object = null;
 }
 
-function getVEGAPlot(url, id) {
+function getVEGAPlot(url, id, type) {
     /*
         Send get request and plot VEGA
     */
+    url.searchParams.set('type', type);
+    url.searchParams.set('cameraId', camera_id);
+
     response = httpGet(url);
     visualization(id, JSON.parse(response));
 }
@@ -92,12 +97,12 @@ function initFloatingDiv() {
     });
 
     document.getElementById('type1').onclick = function(){
-        getVEGAPlot(dataUrl, '#vis');
+        getVEGAPlot(dataUrl, '#vis', 'hourly');
         setContentText('dropdown', '▼ Biểu đồ theo giờ');
     }
 
     document.getElementById('type2').onclick = function(){
-        getVEGAPlot(dataUrl2, '#vis');
+        getVEGAPlot(dataUrl, '#vis', 'daily');
         setContentText('dropdown', '▼ Biểu đồ theo ngày');
     }
 
@@ -143,9 +148,10 @@ function httpGet(url){
     /*
         Send GET request to url
     */
+
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", url, false ); // false for synchronous request
-    xmlHttp.send( null );
+    xmlHttp.send();
     return xmlHttp.responseText;
 }
 

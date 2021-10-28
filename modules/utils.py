@@ -8,11 +8,11 @@ import pandas as pd
 
 def process_df(path):
     df = pd.read_csv(path)
-    small_df = df[['city', 'lat', 'lng',  'population']]
-    small_df.columns = ['name', 'lat', 'lng',  'population']
+    small_df = df[['city', 'lat', 'lng',  'population', 'camera_id']]
+    small_df.columns = ['name', 'lat', 'lng',  'population', 'camera_id']
     small_df = small_df.dropna()
     small_df = small_df.drop_duplicates(['name'])
-    cordinates = [i for i in zip(small_df.name, small_df.lat, small_df.lng)]
+    cordinates = [i for i in zip(small_df.name, small_df.lat, small_df.lng, small_df.camera_id)]
 
     return cordinates
 

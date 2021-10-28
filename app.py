@@ -21,7 +21,8 @@ def map():
 @app.route('/data')
 def data():
     plot_type = request.args.get('type', default = 'hourly', type = str)
-    json_graph = api._convert_db_to_graph('tvlongdinh', type=plot_type)
+    camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
+    json_graph = api._convert_db_to_graph(camera_id, type=plot_type)
     return jsonify(json_graph)
 
 @app.route('/request')

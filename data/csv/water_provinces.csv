@@ -1,3 +1,3 @@
-city,lat,lng,country,iso2,admin_name,capital,population,population_proper
-Mỹ Tho,10.3500,106.3500,Vietnam,VN,Tiền Giang,admin,124143,122310
-Long Định,10.3615,106.302,Vietnam,VN,Tiền Giang,admin,124143,122310
+camera_id,city,lat,lng,country,iso2,admin_name,capital,population,population_proper
+tvmytho,Mỹ Tho,10.3500,106.3500,Vietnam,VN,Tiền Giang,admin,124143,122310
+tvlongdinh,Long Định,10.3615,106.302,Vietnam,VN,Tiền Giang,admin,124143,122310
