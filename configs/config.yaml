@@ -1,4 +1,4 @@
-settings:
+map:
     location: [16.3, 106.72]
     zoom: 6
     overlay:   './data/geojson/vietnam.geojson'
@@ -7,3 +7,6 @@ settings:
     template_dir:   './templates'
     static_dir:     './static'
     # icon_path: 
+
+api:
+    host: http://157.245.207.139:8000/api

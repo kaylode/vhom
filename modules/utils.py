@@ -40,28 +40,6 @@ def get_icon(image_path=None, shadow_path=None, icon_color=None):
 
     return icon
 
-def request_data(url):
-    """
-    Send request data and convert format
-    """
-    data = requests.get(url).json() # dict(name: dict(date:value))
-    
-    for location in data.keys():
-        date_row = list(data[location].keys())
-        value_col = list(data[location].value())
-
-    df = pd.DataFrame(list(zip(date_row, value_col)),
-               columns =['Date', 'Value'])
-
-    # Vincent chart
-    line_chart = vincent.Line(df, width=600, height=300)
-    line_chart.axis_titles(x='Date', y='Value')
-    line_chart.legend(title='Water Level by Date')
-
-    # Convert it to JSON.
-    scatter_json = line_chart.to_json()
-    return scatter_json
-
 def get_vega_popup(json):
     # Let's create a Vega popup based on scatter_json.
     popup = folium.Popup(max_width=450)
