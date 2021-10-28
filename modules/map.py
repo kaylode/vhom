@@ -1,5 +1,5 @@
 import folium
-from .utils import request_data, process_df, get_vega_popup, get_icon
+from .utils import process_df, get_icon
 from .custom import OnClickMarker
 from branca.element import CssLink, JavascriptLink, Element
 
@@ -20,7 +20,7 @@ class MyMap:
         self.add_overlay(config['overlay'])
         self.add_markers(
             cordinates=process_df(config['cordinates']),
-            icon=config['icon'])
+            icon=config['icon_path'])
 
         self.init_headers()
         self.init_body()
@@ -42,7 +42,7 @@ class MyMap:
             
             # Data with each marker, when clicked, client receive 
             marker_data = {
-                'Thành phố': name,
+                'Trạm thủy văn': name,
                 'Kinh độ': str(long),
                 'Vĩ độ': str(lat),
             }
