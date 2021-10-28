@@ -1,7 +1,7 @@
 // Global variables
 
-const dataUrl = 'http://127.0.0.1:5000/data?type=bar';  // Data request URL
-const dataUrl2 = 'http://127.0.0.1:5000/data?type=line';  // Data request URL
+const dataUrl = 'http://127.0.0.1:5000/data?type=hourly';  // Data request URL
+const dataUrl2 = 'http://127.0.0.1:5000/data?type=daily';  // Data request URL
 let clicked_object = null;                        // clicked marker
 var map_id = null;                                // Leaflet Map ID
 
@@ -93,12 +93,12 @@ function initFloatingDiv() {
 
     document.getElementById('type1').onclick = function(){
         getVEGAPlot(dataUrl, '#vis');
-        setContentText('dropdown', '▼ Biểu đồ 1');
+        setContentText('dropdown', '▼ Biểu đồ theo giờ');
     }
 
     document.getElementById('type2').onclick = function(){
         getVEGAPlot(dataUrl2, '#vis');
-        setContentText('dropdown', '▼ Biểu đồ 2');
+        setContentText('dropdown', '▼ Biểu đồ theo ngày');
     }
 
     $('#float_panel2').css({
