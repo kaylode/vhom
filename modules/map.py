@@ -94,12 +94,11 @@ class MyMap:
 
         <div class="div_float" id="float_panel">
             <span id='close'>x</span><br>
-            <p class="w3-sans-serif">Biểu đồ phân tích mực nước</p>
             <div class="w3-dropdown-hover">
-            <button id="dropdown" class="w3-button w3-green">▼ Biểu đồ 1</button>
+            <button id="dropdown" class="w3-button w3-green">▼ Biểu đồ theo giờ</button>
                 <div class="w3-dropdown-content w3-bar-block w3-card-4">
-                    <a href="#" id="type1" class="w3-bar-item w3-button">Biểu đồ 1</a>
-                    <a href="#" id="type2" class="w3-bar-item w3-button">Biểu đồ 2</a>
+                    <a href="#" id="type1" class="w3-bar-item w3-button">Biểu đồ theo giờ</a>
+                    <a href="#" id="type2" class="w3-bar-item w3-button">Biểu đồ theo ngày</a>
                 </div>
             </div>
             <br>
