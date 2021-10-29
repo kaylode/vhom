@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from datetime import datetime
+from datetime import date, datetime
 import asyncio
 
 DATABASE_CSV = './data/database/db.csv'
@@ -10,17 +10,12 @@ CHART_JSON = './static/data/chart.json'
 class Database:
     def __init__(self) -> None:
         self.path = DATABASE_CSV
-
-    def background_crawl(self, **kwargs):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        response = loop.run_until_complete(self._crawl_data_on_daily(**kwargs))
-        return response
-
-    async def _crawl_data_on_daily(self, api, camera_id, lasted_date):
+        
+    def _crawl_data_on_daily(self, api, camera_ids, lasted_date, step=0.5):
         data = api.crawl_data(
-            camera_ids=[camera_id],
+            camera_ids=camera_ids,
             from_date = lasted_date,
+            step = step
         )
         try:
             response = self._save_data_to_db(data)
@@ -72,8 +67,10 @@ class Database:
         if len(df) == 0:
             timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
         else:
-            timestamp = df.iloc[-1].timestamp
-
+            timestamps = df.timestamp.tolist()
+            timestamps = [datetime.strptime(t, '%Y-%m-%dT%H:%M:%S') for t in timestamps]
+            timestamp = max(timestamps)
+            timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%S')
         return timestamp
 
     def _convert_db_to_graph(self, filter_fn=None):

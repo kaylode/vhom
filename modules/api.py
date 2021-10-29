@@ -72,7 +72,7 @@ class WaterLevelAPI:
 
                 # Check if requested timestamp is unchanged
                 if len(result_dict['timestamp']) > 0:
-                    if extracted_data['timestamp'] == result_dict['timestamp'][-1]:
+                    if extracted_data['timestamp'] == result_dict['timestamp'][-1] and extracted_data['camera_id'] == result_dict['camera_id'][-1]:
                         break
 
                 for key, value in extracted_data.items():
