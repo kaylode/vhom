@@ -8,7 +8,7 @@ from tqdm import tqdm
 WATER_LEVEL_API = '{city_name}/history?time={time_stamp}'
 TIMEFORMAT = "%Y-%m-%d-%H-%M-%S"
 CITIES = ["tvlongdinh", "tvmytho"]
-DATABASE = './data/database/db.csv'
+DATABASE = '../data/database/db.csv'
 
 class MyAPI:
     def __init__(self, config) -> None:
