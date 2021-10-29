@@ -9,7 +9,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app_config = Config('./configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
-server_config = api_config.server
+server_config = app_config.server
+
 api = MyAPI(api_config)
 
 @app.route('/')
@@ -50,5 +51,5 @@ def add_header(r):
 
 if __name__ == '__main__':
     app.run(
-        host=server_config.host, port=server_config.port, threaded=True
+        host=server_config['host'], port=server_config['port'], threaded=True
     )    
