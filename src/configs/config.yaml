@@ -1,8 +1,8 @@
 map:
   location: [16.3, 106.72]
   zoom: 6
-  overlay: "./data/geojson/vietnam.geojson"
-  cordinates: "./data/csv/water_provinces.csv"
+  overlay: "../data/geojson/vietnam.geojson"
+  cordinates: "../data/csv/water_provinces.csv"
 
   template_dir: "./templates"
   static_dir: "./static"

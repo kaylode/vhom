@@ -3,9 +3,6 @@ FROM ubuntu
 # Non-root user
 ARG USERNAME
 
-# ENV TZ=Europe/Kiev
-# RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 RUN apt-get update &&\
     apt-get install -y --no-install-recommends curl git sudo &&\
     useradd --create-home --shell /bin/bash $USERNAME &&\
@@ -18,10 +15,8 @@ RUN apt-get -qq update && apt-get -y --no-install-recommends install wget python
 
 USER ${USERNAME}
 
-
-COPY . /home/${USERNAME}/
+COPY ./requirements.txt /home/${USERNAME}/
 
 RUN cd /home/${USERNAME}/ && pip install -r requirements.txt 
 
-WORKDIR /home/${USERNAME}/
 
