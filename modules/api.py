@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 import vincent
 from tqdm import tqdm
 
-CITIES = ["tvlongdinh", "tvmytho"]
-
 class WaterLevelAPI:
     def __init__(self, config) -> None:
         self.request_template = '{city_name}/history?time={time_stamp}'

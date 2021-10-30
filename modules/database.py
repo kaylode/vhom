@@ -128,4 +128,4 @@ class Database:
 
 
 ## Initiate database
-DATABASE = Database()
+# DATABASE = Database()

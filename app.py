@@ -2,7 +2,7 @@ import os
 from modules import MyMap, WaterLevelAPI, BackgroundTasks
 from configs import Config
 from flask import Flask, render_template, jsonify, request
-from modules.database import DATABASE
+from modules.database2 import DATABASE
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -23,10 +23,12 @@ def data():
     plot_type = request.args.get('type', default = 'hourly', type = str)
     camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
 
-    def filter_fn(db):
-        return db[db.camera_id==camera_id]
-
-    json_graph = DATABASE._convert_db_to_graph(filter_fn)
+    json_graph = DATABASE._convert_db_to_graph(
+        table_name='waterlevel',
+        filter_dict={
+            'camera_id': camera_id
+        }
+    )
     return jsonify(json_graph)
 
 @app.route('/request')
@@ -38,7 +40,7 @@ def requests():
     )
 
     try:
-        response = DATABASE._save_data_to_db(data)
+        response = DATABASE._save_data_to_db(data, table_name='waterlevel')
     except:
         response = {
             "status": 404,
@@ -60,9 +62,7 @@ def add_header(r):
     return r
 
 if __name__ == '__main__':
-    
-
-    thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
-    thread.start()
+    # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
+    # thread.start()
     app.run(debug=True)
-    thread.break_loop()
+    # thread.break_loop()
