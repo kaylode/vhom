@@ -1,2 +1,4 @@
 */__pycache__
-/templates/index.html
+data/database/db.csv
+static/data/graph.csv
+templates/index.html

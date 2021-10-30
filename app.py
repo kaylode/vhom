@@ -1,8 +1,8 @@
-import json
 import os
-from modules import MyMap, MyAPI
+from modules import MyMap, WaterLevelAPI, BackgroundTasks
 from configs import Config
 from flask import Flask, render_template, jsonify, request
+from modules.database2 import DATABASE
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -10,7 +10,7 @@ app_config = Config('./configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
 
-api = MyAPI(api_config)
+API = WaterLevelAPI(api_config)
 
 @app.route('/')
 def map():
@@ -22,19 +22,32 @@ def map():
 def data():
     plot_type = request.args.get('type', default = 'hourly', type = str)
     camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
-    json_graph = api._convert_db_to_graph(camera_id, type=plot_type)
+
+    json_graph = DATABASE._convert_db_to_graph(
+        table_name='waterlevel',
+        filter_dict={
+            'camera_id': camera_id
+        }
+    )
     return jsonify(json_graph)
 
 @app.route('/request')
 def requests():
     
-    api.crawl_data(
-        camera_ids=['tvlongdinh', 'tvmytho'],
-        from_date='2021-09-03',
+    data = API.crawl_data(
+        camera_ids=['tvmytho', 'tvlongdinh'],
+        from_date='2021-10-27T00:00:00',
     )
-    return jsonify({
-        '202': 'Successfully crawled'
-    })
+
+    try:
+        response = DATABASE._save_data_to_db(data, table_name='waterlevel')
+    except:
+        response = {
+            "status": 404,
+            "reponse": "Failed to save"
+        }
+
+    return jsonify(response)
 
 @app.after_request
 def add_header(r):
@@ -49,5 +62,7 @@ def add_header(r):
     return r
 
 if __name__ == '__main__':
+    # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
+    # thread.start()
     app.run(debug=True)
-    
+    # thread.break_loop()
