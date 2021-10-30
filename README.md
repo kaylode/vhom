@@ -7,13 +7,16 @@
 
 ## How to run
 
+- Install PostgreSQL
+- Download postgresql from https://www.postgresql.org/download/
+- Install both PostgreSQL Server and pgAdmin
+
 - Run the app
 ```
 python app.py
 ```
 
 - Go to server: http://127.0.0.1:5000/
-
 - To crawl data and save to database: http://127.0.0.1:5000/request
 
 ## Water Level API
