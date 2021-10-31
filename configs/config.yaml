@@ -1,11 +1,11 @@
 map:
     location: [16.3, 106.72]
     zoom: 6
-    overlay:   './data/geojson/vietnam.geojson'
-    cordinates: './data/csv/water_provinces.csv'
+    overlay:   './modules/map/overlay/geojson/vietnam.geojson'
+    cordinates: './modules/map/overlay/coordinates/water_provinces.csv'
 
-    template_dir:   './templates'
-    static_dir:     './static'
+    template_dir:   './web/templates'
+    static_dir:     './web/static'
     icon_path: null
 
 api:

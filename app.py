@@ -1,16 +1,15 @@
 import os
-from modules import MyMap, WaterLevelAPI, BackgroundTasks
+from modules import MyMap, WaterLevelAPI, BackgroundTasks, DATABASE
 from configs import Config
 from flask import Flask, render_template, jsonify, request
-from modules.database2 import DATABASE
 
-app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app_config = Config('./configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
-
 API = WaterLevelAPI(api_config)
+
+app = Flask(__name__, template_folder=map_config['template_dir'], static_url_path="/web/static", static_folder="web/static")
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 @app.route('/')
 def map():
@@ -62,6 +61,7 @@ def add_header(r):
     return r
 
 if __name__ == '__main__':
+    DATABASE.connect()
     # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
     # thread.start()
     app.run(debug=True)

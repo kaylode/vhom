@@ -1,4 +1,3 @@
 */__pycache__
-data/database/db.csv
-static/data/graph.csv
-templates/index.html
+web/static/data/graph.csv
+web/templates/index.html

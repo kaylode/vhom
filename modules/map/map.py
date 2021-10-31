@@ -38,8 +38,7 @@ class MyMap:
         """
 
         for name, lat, long, camera_id in cordinates:
-            # popup = get_vega_popup(json.load(open('./static/data/bar2.json','r')))
-            
+
             # Data with each marker, when clicked, client receive 
             marker_data = {
                 'Camera id': camera_id,

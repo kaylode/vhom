@@ -6,12 +6,12 @@ from datetime import datetime
 from configparser import ConfigParser
 
 DATABASE_CONFIG = {
-    'filename':'data/database/database.ini', 
+    'filename':'modules/database/config/postgresql.ini', 
     'section': 'postgresql',
 }
 
-GRAPH_CSV = './static/data/graph.csv'
-CHART_JSON = './static/data/chart.json'
+GRAPH_CSV = './web/static/data/graph.csv'
+CHART_JSON = './web/static/data/chart.json'
 
 class PostgreSQLDatabase:
     def __init__(self) -> None:

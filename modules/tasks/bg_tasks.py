@@ -19,7 +19,7 @@ class BackgroundTasks(threading.Thread):
             if running_time % self.run_every_sec == 0:
                 self.db._crawl_data_on_daily(
                     camera_ids=['tvmytho', 'tvlongdinh'], 
-                    lasted_date = self.db._get_last_date(),
+                    lasted_date = self.db._get_last_date('waterlevel'),
                     api=self.api, step=0.5
                 )
 
