@@ -3,13 +3,19 @@ import json
 import folium
 import pandas as pd
 
-def process_df(path):
-    df = pd.read_csv(path)
-    small_df = df[['city', 'lat', 'lng',  'population', 'camera_id']]
-    small_df.columns = ['name', 'lat', 'lng',  'population', 'camera_id']
-    small_df = small_df.dropna()
-    small_df = small_df.drop_duplicates(['name'])
-    cordinates = [i for i in zip(small_df.name, small_df.lat, small_df.lng, small_df.camera_id)]
+
+def get_info_from_json(path):
+    with open(path, 'r', encoding='utf8') as f:
+        states = json.load(f)
+
+    cordinates = []
+    features = states['features']
+
+    for city_feat in features:
+        name = city_feat['properties']['name']
+        camera_id = city_feat['properties']['camera_id']
+        long, lat = city_feat['geometry']['coordinates']
+        cordinates.append([name, lat, long, camera_id])
 
     return cordinates
 

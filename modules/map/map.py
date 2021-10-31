@@ -1,7 +1,8 @@
 import folium
-from .utils import process_df, get_icon
+from .utils import get_icon, get_info_from_json
 from .custom import OnClickMarker
 from branca.element import CssLink, JavascriptLink, Element
+from folium import plugins
 
 class MyMap:
     """
@@ -22,7 +23,7 @@ class MyMap:
 
         self.add_overlay(config['overlay'])
         self.add_markers(
-            cordinates=process_df(config['cordinates']),
+            cordinates=get_info_from_json(config['cordinates']),
             icon=config['icon_path'])
 
         self.init_headers()
@@ -39,6 +40,10 @@ class MyMap:
         """
         Add pre-defined markers to map
         """
+        
+        # Use marker cluster to work with search bar
+        mcg = plugins.MarkerCluster(control=False)
+        self.map.add_child(mcg)
 
         for name, lat, long, camera_id in cordinates:
 
@@ -51,14 +56,34 @@ class MyMap:
             }
 
             marker = OnClickMarker(
+                name=name,
                 location=[lat, long],
                 popup=name,
                 icon=get_icon(icon, icon_color='blue'),
                 on_click="onMarkerClick",
                 on_click_data=marker_data)
 
-            marker.add_to(self.map)
+            marker.add_to(mcg)
 
+        self.add_search_bar(mcg)
+
+    def add_search_bar(self, mcg):
+        """
+        Add search bar, search for specific location
+        """
+        statesearch = plugins.Search(
+            layer=mcg,
+            geom_type='Point',
+            placeholder="Tìm kiếm trạm",
+            collapsed=False,
+            search_label='name',
+            search_zoom=14,
+            position='topleft'
+        )
+        
+        statesearch.add_to(self.map)
+
+    
     def save_html(self, path):
         """
         Save map to static html file
@@ -71,9 +96,9 @@ class MyMap:
         Add JavaScript libraries, CSS files
         """
         from .custom import CustomJavaScript
-        self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
-        self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/tailwind.css') }}"))
         self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/w3.css') }}"))
+        self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/tailwind.css') }}"))
+        self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
         self.map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/main.js') }}"))
         self.map.get_root().header.add_child(JavascriptLink("{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"))
         self.map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega@5"))
@@ -97,7 +122,7 @@ class MyMap:
         <div class="div_float" id="float_panel">
             <span id='close'>x</span><br>
             <div class="w3-dropdown-hover">
-            <button id="dropdown" class="w3-button w3-green">▼ Biểu đồ theo giờ</button>
+            <button id="dropdown" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">▼ Biểu đồ theo giờ</button>
                 <div class="w3-dropdown-content w3-bar-block w3-card-4">
                     <a href="#" id="type1" class="w3-bar-item w3-button">Biểu đồ theo giờ</a>
                     <a href="#" id="type2" class="w3-bar-item w3-button">Biểu đồ theo ngày</a>
@@ -113,6 +138,73 @@ class MyMap:
         </div>
 
         '''
+
+        # html_body = '''
+        # <!-- This example requires Tailwind CSS v2.0+ -->
+        # <div class="fixed inset-0 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        # <div class="absolute inset-0 overflow-hidden">
+        #     <!--
+        #     Background overlay, show/hide based on slide-over state.
+
+        #     Entering: "ease-in-out duration-500"
+        #         From: "opacity-0"
+        #         To: "opacity-100"
+        #     Leaving: "ease-in-out duration-500"
+        #         From: "opacity-100"
+        #         To: "opacity-0"
+        #     -->
+        #     <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        #     <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+        #     <!--
+        #         Slide-over panel, show/hide based on slide-over state.
+
+        #         Entering: "transform transition ease-in-out duration-500 sm:duration-700"
+        #         From: "translate-x-full"
+        #         To: "translate-x-0"
+        #         Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
+        #         From: "translate-x-0"
+        #         To: "translate-x-full"
+        #     -->
+        #     <div class="relative w-screen max-w-md">
+        #         <!--
+        #         Close button, show/hide based on slide-over state.
+
+        #         Entering: "ease-in-out duration-500"
+        #             From: "opacity-0"
+        #             To: "opacity-100"
+        #         Leaving: "ease-in-out duration-500"
+        #             From: "opacity-100"
+        #             To: "opacity-0"
+        #         -->
+        #         <div class="absolute top-0 left-0 -ml-8 pt-4 pr-2 flex sm:-ml-10 sm:pr-4">
+        #         <button type="button" class="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
+        #             <span class="sr-only">Close panel</span>
+        #             <!-- Heroicon name: outline/x -->
+        #             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        #             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        #             </svg>
+        #         </button>
+        #         </div>
+
+        #         <div class="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
+        #         <div class="px-4 sm:px-6">
+        #             <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
+        #             Panel title
+        #             </h2>
+        #         </div>
+        #         <div class="mt-6 relative flex-1 px-4 sm:px-6">
+        #             <!-- Replace with your content -->
+        #             <div class="absolute inset-0 px-4 sm:px-6">
+        #             <div class="h-full border-2 border-dashed border-gray-200" aria-hidden="true"></div>
+        #             </div>
+        #             <!-- /End replace -->
+        #         </div>
+        #         </div>
+        #     </div>
+        #     </div>
+        # </div>
+        # </div>
+        # '''
         self.map.get_root().html.add_child(Element(html_body))
 
     
