@@ -1,3 +1,4 @@
-*/__pycache__
+__pycache__/
+*.pyc
 web/static/data/graph.csv
 web/templates/index.html

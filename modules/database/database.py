@@ -1,16 +1,116 @@
+import psycopg2
+from psycopg2 import sql
 import json
 import pandas as pd
-from datetime import date, datetime
-import asyncio
+from datetime import datetime
+from configparser import ConfigParser
 
-DATABASE_CSV = './data/database/db.csv'
-GRAPH_CSV = './static/data/graph.csv'
-CHART_JSON = './static/data/chart.json'
+class PostgreSQLDatabase:
+    def __init__(self, config_file, section) -> None:
+        self.config = self.load_config(config_file, section)
+        self.cursor = None
+        self.connection = None
+    
+    def load_config(self, filename, section):
+        parser = ConfigParser()
+        # read config file
+        parser.read(filename)
 
-class Database:
-    def __init__(self) -> None:
-        self.path = DATABASE_CSV
+        # get section, default to postgresql
+        db = {}
+        if parser.has_section(section):
+            params = parser.items(section)
+            for param in params:
+                db[param[0]] = param[1]
+        else:
+            raise Exception(
+                "Section {0} not found in the {1} file".format(section, filename)
+            )
+
+        return db
+
+    def connect(self, config_params={}):
+
+        self.config.update(config_params)
+
+        """ Connect to the PostgreSQL database server """
+        self.connection = None
+        try:
+            # connect to the PostgreSQL server
+            print('Connecting to the PostgreSQL database...')
+            self.connection = psycopg2.connect(**self.config)
+            
+            # create a cursor
+            self.cursor = self.connection.cursor()
+            
+            # execute a statement
+            print('PostgreSQL database version:')
+            self.cursor.execute('SELECT version()')
+
+            # display the PostgreSQL database server version
+            db_version = self.cursor.fetchone()
+            print(db_version)
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+
+    def close(self):
+        if self.cursor is not None:
+            self.cursor.close()
+        if self.connection is not None:
+            self.connection.close()
+            print('Database connection closed.')
+
+    def check_table_exist(self, table_name):
+        comand = """select exists(select * from information_schema.tables where table_name=%(table_name)s)"""
+        self.cursor.execute(comand, {
+            'table_name': table_name
+        })
+        return bool(self.cursor.rowcount)
+
+    def create_table(self, table_name, column_dict={}):
+
+        if self.check_table_exist(table_name):
+            print("Table exists")
+            return
+
+        colum_string = []
+        for key, value in column_dict.items():
+            colum_string.append(f"{key} {value}")
         
+        colum_string = ", ".join(colum_string)
+
+        command = f"""
+        create table {table_name} (
+            {colum_string}
+        )
+        """
+        try:
+            self.cursor.execute(command)
+            self.connection.commit()
+        except psycopg2.errors.DuplicateTable:
+            print(f"Table {table_name} is aldreay existed")
+
+    def check_row_exists(self, table_name, condition_dict):
+        
+        colum_string = []
+        for key, value in condition_dict.items():
+            colum_string.append(f"{key}='{value}'")
+        
+        colum_string = ' and '.join(colum_string)
+
+        command = f"""
+            select exists(select 1 from {table_name} where {colum_string})
+        """
+
+        try:
+            self.cursor.execute(command)
+            row = self.cursor.fetchone()[0]
+        except psycopg2.errors.DuplicateTable:
+            print(f"Table {table_name} is aldreay existed")
+         
+        return row
+    
     def _crawl_data_on_daily(self, api, camera_ids, lasted_date, step=0.5):
         data = api.crawl_data(
             camera_ids=camera_ids,
@@ -25,8 +125,67 @@ class Database:
                 "reponse": "Failed to save"
             }
         return response
+
+    def _db_to_json(self, rows):
+        """
+        Convert dataframe to json
+        :params:
+            dataframe: dataframe need to be converted
+        :returns:
+            vega json: vega plot file. Will be rendered by Javascripts
+        """
+    
+        graph_json = []
+
+        for _, cam_id, timestamp, reading1, reading2 in rows:
+            timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+            graph_json.append({
+                'camera_id': cam_id,
+                'timestamp': timestamp,
+                'type': 'reading1',
+                'value': reading1
+            })
+            graph_json.append({
+                'camera_id': cam_id,
+                'timestamp': timestamp,
+                'type': 'reading2',
+                'value': reading2
+            })
         
-    def _save_data_to_db(self, data):
+        return graph_json
+
+    def _convert_db_to_graph(self, graph_csv, table_name, filter_dict=None):
+        """
+        Convert database to graph
+        :params:
+            filter_fn: database filter function
+        :returns:
+            vega json: vega plot file. Will be rendered by Javascripts
+        """
+
+        if filter_dict is not None:
+            filter_string = []
+            for key, value in filter_dict.items():
+                filter_string.append(f"{key}='{value}'")
+            filter_string = ' and '.join(filter_string)
+
+        if filter_dict is not None:
+            command = f"""
+                select * from {table_name} where {filter_string}
+            """
+        else:
+            command = f"""
+                select * from {table_name}
+            """
+        
+        self.cursor.execute(command)
+        rows = self.cursor.fetchall()
+
+        # Convert database to json format, then save to visualize VEGA plot
+        graph_json = self._db_to_json(rows)
+        pd.DataFrame(graph_json).to_csv(graph_csv, index=False)
+        
+    def _save_data_to_db(self, data, table_name):
         """
         Save data to database
         :params:
@@ -39,93 +198,57 @@ class Database:
                 }
         """
 
-        df = pd.read_csv(self.path)
-        data_df = pd.DataFrame(data, columns=data.keys())
-        df = df.append(data_df)
-        df.to_csv(self.path, index=False)
+        if self.connection is None:
+            self.connect()
+
+        dict_iter = zip(*data.values())
+        
+        for values in dict_iter:
+            command = sql.SQL("""insert into {}(camera_id, timestamp, reading1, reading2) values(%s, %s, %s, %s)""").format(sql.Identifier(table_name))
+
+            self.cursor.execute(command, [*values])
+        self.connection.commit()
+        
         return {
             "status": 202,
             "reponse": "Successfully saved"
         }
 
-    def _get_db(self):
-        """
-        Get database
-        """
-        df = pd.read_csv(self.path)
-        return df
-
-    def _get_last_date(self, filter_fn=None):
+    def _get_last_date(self, table_name, filter_dict=None):
         """
         Get lastest date, if database is empty, get now
         """
-
-        df = pd.read_csv(self.path)
-        if filter_fn is not None:
-            df = filter_fn(df)
-
-        if len(df) == 0:
-            timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        if filter_dict is not None:
+            filter_string = []
+            for key, value in filter_dict.items():
+                filter_string.append(f"{key}='{value}'")
+            filter_string = ' and '.join(filter_string)
+            command = f"select max(timestamp) from {table_name} where {filter_string}"
         else:
-            timestamps = df.timestamp.tolist()
-            timestamps = [datetime.strptime(t, '%Y-%m-%dT%H:%M:%S') for t in timestamps]
-            timestamp = max(timestamps)
-            timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+            command = sql.SQL("""select max(timestamp) from {}""").format(sql.Identifier(table_name))
+        
+        self.cursor.execute(command)
+        timestamp = self.cursor.fetchone()[0]
         return timestamp
 
-    def _convert_db_to_graph(self, filter_fn=None):
+    def __del__(self):
         """
-        Convert database to graph
-        :params:
-            filter_fn: database filter function
-        :returns:
-            vega json: vega plot file. Will be rendered by Javascripts
+        Destructor
         """
-
-        df = pd.read_csv(self.path)
-
-        if filter_fn is not None:
-            df = filter_fn(df)
-
-        # Convert database to json format, then save to visualize VEGA plot
-        graph_json = self._df_to_json(df)
-        pd.DataFrame(graph_json).to_csv(GRAPH_CSV, index=False)
-
-        # Return vega json
-        return json.load(open(CHART_JSON, encoding='utf-8'))
-
-    def _df_to_json(self, dataframe):
-        """
-        Convert dataframe to json
-        :params:
-            dataframe: dataframe need to be converted
-        :returns:
-            vega json: vega plot file. Will be rendered by Javascripts
-        """
-        graph_json = []
-        graph_info = [i for i in zip(
-            dataframe.camera_id,
-            dataframe.timestamp,
-            dataframe.reading1,
-            dataframe.reading2)]
-        
-        for cam_id, timestamp, reading1, reading2 in graph_info:
-            graph_json.append({
-                'camera_id': cam_id,
-                'timestamp': timestamp,
-                'type': 'reading1',
-                'value': reading1
-            })
-
-            graph_json.append({
-                'camera_id': cam_id,
-                'timestamp': timestamp,
-                'type': 'reading2',
-                'value': reading2
-            })
-        
-        return graph_json
+        self.close()
 
 
-## Initiate database
-# DATABASE = Database()
+if __name__ == '__main__':
+    db = PostgreSQLDatabase()
+    db.connect()
+
+    db.create_table(
+        table_name='waterlevel',
+        column_dict = {
+            'id': "serial primary key",
+            'camera_id': "varchar(30) not null",
+            'timestamp': "timestamp",               #'2016-06-22 19:10:25-07'
+            'reading1': "double precision",
+            'reading2': "double precision",
+        }
+    )
