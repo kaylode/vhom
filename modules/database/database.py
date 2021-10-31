@@ -1,8 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-import json
 import pandas as pd
-from datetime import datetime
 from configparser import ConfigParser
 
 class PostgreSQLDatabase:
@@ -204,6 +202,12 @@ class PostgreSQLDatabase:
         dict_iter = zip(*data.values())
         
         for values in dict_iter:
+            if self.check_row_exists(table_name, condition_dict={
+                    'camera_id': values[0],
+                    'timestamp': values[1],
+                }):
+                continue
+
             command = sql.SQL("""insert into {}(camera_id, timestamp, reading1, reading2) values(%s, %s, %s, %s)""").format(sql.Identifier(table_name))
 
             self.cursor.execute(command, [*values])
