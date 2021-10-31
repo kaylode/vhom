@@ -4,18 +4,21 @@ from modules import MyMap, WaterLevelAPI, BackgroundTasks, PostgreSQLDatabase
 from configs import Config
 from flask import Flask, render_template, jsonify, request
 
+###   CONFIGURATION     ####
 app_config = Config('./configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
 db_config = app_config.database
 
+###     INITIALIZE FLASK        ###
 app = Flask(__name__, 
     template_folder=map_config['template_dir'], 
     static_url_path='/'+map_config['static_dir'], 
     static_folder=map_config['static_dir'])
-
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+
+###     ROUTING        ####
 @app.route('/')
 def map():
     folium_map = MyMap(map_config)
@@ -69,6 +72,8 @@ def add_header(r):
     return r
 
 if __name__ == '__main__':
+
+    print(app_config)
 
     ## Initiate API
     API = WaterLevelAPI(api_config)

@@ -5,7 +5,10 @@ from branca.element import CssLink, JavascriptLink, Element
 
 class MyMap:
     """
-    My custom map class
+    My custom map class. Purposes:
+        - Render map, icons, overlay, markers
+        - Embed HTML header, body for JS scripts to work
+        - Save to HTML file
     """
     def __init__(self, config):
 
