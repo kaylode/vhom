@@ -9,6 +9,7 @@ app_config = Config('./configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
 db_config = app_config.database
+server_config = app_config.server
 
 ###     INITIALIZE FLASK        ###
 app = Flask(__name__, 
@@ -100,5 +101,9 @@ if __name__ == '__main__':
 
     # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
     # thread.start()
-    app.run(debug=True)
+    # app.run(debug=True)
+
+    app.run(
+        host=server_config['host'], port=server_config['port'], threaded=True
+    )    
     # thread.break_loop()
