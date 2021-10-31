@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": "Biểu đồ khí tượng thủy văn",
   "description": "Dữ liệu thủy văn",
-  "data": {"url": "./static/data/graph.csv"},
+  "data": {"url": "./web/static/data/graph.csv"},
   "width": 300,
   "height": 300,
   "layer": [

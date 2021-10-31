@@ -5,7 +5,10 @@ from branca.element import CssLink, JavascriptLink, Element
 
 class MyMap:
     """
-    My custom map class
+    My custom map class. Purposes:
+        - Render map, icons, overlay, markers
+        - Embed HTML header, body for JS scripts to work
+        - Save to HTML file
     """
     def __init__(self, config):
 
@@ -38,8 +41,7 @@ class MyMap:
         """
 
         for name, lat, long, camera_id in cordinates:
-            # popup = get_vega_popup(json.load(open('./static/data/bar2.json','r')))
-            
+
             # Data with each marker, when clicked, client receive 
             marker_data = {
                 'Camera id': camera_id,
@@ -70,13 +72,13 @@ class MyMap:
         """
         from .custom import CustomJavaScript
         self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/style.css') }}"))
+        self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/tailwind.css') }}"))
         self.map.get_root().header.add_child(CssLink("{{ url_for('static', filename='css/w3.css') }}"))
         self.map.get_root().html.add_child(JavascriptLink("{{ url_for('static', filename='js/main.js') }}"))
         self.map.get_root().header.add_child(JavascriptLink("{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"))
         self.map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega@5"))
         self.map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega-lite@5"))
         self.map.get_root().header.add_child(JavascriptLink("https://cdn.jsdelivr.net/npm/vega-embed@6"))
-
 
     def init_body(self):
         """
