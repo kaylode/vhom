@@ -27,12 +27,13 @@
 }
 
 .div_float {
-  position:absolute;
+  position:relative;
   z-index: 9999;
   border-radius: 15px 50px 30px;
   overflow: hidden;
-  display:none;
+  display:block;
   text-align: center;
+  /* cursor: col-resize; */
 }
 
 #close {

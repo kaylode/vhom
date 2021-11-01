@@ -37,8 +37,10 @@ function onMarkerClick(e, dict) {
         On click event of leaflet markers (call by server)
     */
     // Show Panel on the right, to add VEGA plot
-    $("#float_panel").show();
-    $("#float_panel2").show();
+    var element = document.getElementById("sliding_anim");
+    element.classList.remove("translate-x-full");
+    element.classList.add("translate-x-0");
+
 
     // Set camera id
     camera_id = dict['Camera id'];
@@ -63,8 +65,10 @@ function onCloseClick(){
     */
 
     // Hide VEGA plot
-    $("#float_panel").hide();
-    $("#float_panel2").hide();
+    // $("#float_panel").hide();
+    var element = document.getElementById("sliding_anim");
+    element.classList.remove("translate-x-0");
+    element.classList.add("translate-x-full");
 
     if (clicked_object) {
         changeMarkerIconColor(clicked_object, 'blue');
@@ -81,41 +85,6 @@ function getVEGAPlot(url, id, type) {
 
     response = httpGet(url);
     visualization(id, JSON.parse(response));
-}
-
-function initFloatingDiv() {
-    /*
-        Set custom DIV and dropdowns
-    */
-    $('#float_panel').css({
-        "float":"right",
-        "top": "10%",
-        "left": "70%",
-        "color": "red",
-        "background-color": "white",
-        "width":"25%",
-    });
-
-    document.getElementById('type1').onclick = function(){
-        getVEGAPlot(dataUrl, '#vis', 'hourly');
-        setContentText('dropdown', '▼ Biểu đồ theo giờ');
-    }
-
-    document.getElementById('type2').onclick = function(){
-        getVEGAPlot(dataUrl, '#vis', 'daily');
-        setContentText('dropdown', '▼ Biểu đồ theo ngày');
-    }
-
-    $('#float_panel2').css({
-        "float":"right",
-        "top": "60%",
-        "left": "70%",
-        "color": "black",
-        "background-color": "white",
-        "width":"25%",
-        "text-align": "justify"
-    });
-
 }
 
 function setContentText(id, text) {
@@ -140,8 +109,6 @@ window.onload = function(){
     // Set on click event for close button
     document.getElementById('close').onclick = onCloseClick;
     
-    // Initialize floating div
-    initFloatingDiv();
 };
 
 function httpGet(url){
