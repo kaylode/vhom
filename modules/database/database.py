@@ -75,16 +75,6 @@ class PostgreSQLDatabase:
             self.connection.close()
             print('Database connection closed.')
 
-    def check_table_exist(self, table_name):
-        """
-        Check whether the table has already existed
-        """
-        comand = """select exists(select * from information_schema.tables where table_name=%(table_name)s)"""
-        self.cursor.execute(comand, {
-            'table_name': table_name
-        })
-        return bool(self.cursor.rowcount)
-
     def create_table(self, table_name, column_dict={}):
         """
         Create table in the database
@@ -95,11 +85,6 @@ class PostgreSQLDatabase:
                     'id': 'integer primary key'
                 }
         """
-
-        # Check if table name already existed
-        if self.check_table_exist(table_name):
-            print("Table exists")
-            return
 
         # Convert column dict to string
         colum_string = []
@@ -120,6 +105,7 @@ class PostgreSQLDatabase:
             self.connection.commit()
         except psycopg2.errors.DuplicateTable:
             print(f"Table {table_name} is aldreay existed")
+            self.connection.rollback()
 
     def check_row_exists(self, table_name, condition_dict):
         """
