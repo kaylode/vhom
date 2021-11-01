@@ -1,6 +1,6 @@
 // Global variables
 
-const dataUrl = new URL('http://127.0.0.1:5000/data');  // Data request URL
+const dataUrl = new URL('http://192.168.100.9:5000/data');  // Data request URL
 let clicked_object = null;                        // clicked marker
 var map_id = null;                                // Leaflet Map ID
 var camera_id = null;
