@@ -110,101 +110,80 @@ class MyMap:
         Add custom body HTML
         """
         
-        html_body = '''
-        <div class="w3-bar w3-blue">
-            <a href="#" class="w3-bar-item w3-mobile w3-yellow w3-middle w3-large">Vietnam Water level map</a>
-            <a href="#" class="w3-bar-item w3-button w3-hover-green w3-right"><i class="fa fa-search"></i></a>
-            <input type="text" class="w3-bar-item w3-input w3-right" placeholder="Search..">
-            <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-envelope"></i></a>
-            <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-home"></i></a>
-        </div>        
+        # html_body = '''
+        # <div class="w3-bar w3-blue">
+        #     <a href="#" class="w3-bar-item w3-mobile w3-yellow w3-middle w3-large">Vietnam Water level map</a>
+        #     <a href="#" class="w3-bar-item w3-button w3-hover-green w3-right"><i class="fa fa-search"></i></a>
+        #     <input type="text" class="w3-bar-item w3-input w3-right" placeholder="Search..">
+        #     <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-envelope"></i></a>
+        #     <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-home"></i></a>
+        # </div>        
 
-        <div class="div_float" id="float_panel">
-            <span id='close'>x</span><br>
-            <div class="w3-dropdown-hover">
-            <button id="dropdown" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">▼ Biểu đồ theo giờ</button>
-                <div class="w3-dropdown-content w3-bar-block w3-card-4">
-                    <a href="#" id="type1" class="w3-bar-item w3-button">Biểu đồ theo giờ</a>
-                    <a href="#" id="type2" class="w3-bar-item w3-button">Biểu đồ theo ngày</a>
+        html_body = '''
+        <!-- This example requires Tailwind CSS v2.0+ -->
+        <div id="float_panel" class="fixed inset-0 overflow-hidden div_float w-0" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!--
+            Background overlay, show/hide based on slide-over state.
+
+            Entering: "ease-in-out duration-500"
+                From: "opacity-0"
+                To: "opacity-100"
+            Leaving: "ease-in-out duration-500"
+                From: "opacity-100"
+                To: "opacity-0"
+            -->
+            <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <div id="sliding_anim" class="fixed inset-y-0 right-0 pl-10 max-w-full flex transform transition ease-in-out duration-500 sm:duration-700 translate-x-full">
+            <!--
+                Slide-over panel, show/hide based on slide-over state.
+
+                Entering: "transform transition ease-in-out duration-500 sm:duration-700"
+                From: "translate-x-full"
+                To: "translate-x-0"
+                Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
+                From: "translate-x-0"
+                To: "translate-x-full"
+            -->
+            <div class="relative w-screen max-w-3xl" >
+                <!--
+                Close button, show/hide based on slide-over state.
+
+                Entering: "ease-in-out duration-500"
+                    From: "opacity-0"
+                    To: "opacity-100"
+                Leaving: "ease-in-out duration-500"
+                    From: "opacity-100"
+                    To: "opacity-0"
+                -->
+                <div class="absolute top-0 left-12 -ml-8 pt-4 pr-2 flex sm:-ml-10 sm:pr-4">
+                <button id="close" type="button" class="rounded-md text-red-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
+                    <span class="sr-only">Đóng</span>
+                    <!-- Heroicon name: outline/x -->
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                </div>
+
+                <div class="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
+                <div class="px-4 sm:px-6">
+                    <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
+                    Thông tin khí tượng thủy văn
+                    </h2>
+                </div>
+                <div class="mt-6 relative flex-1">
+                    <!-- Replace with your content -->
+                    <div id="vis"></div>
+                    <div id="city-info"></div>
+                    <!-- /End replace -->
+                </div>
                 </div>
             </div>
-            <br>
-            <div id="vis"></div>
-            
+            </div>
         </div>
-
-        <div class="div_float" id="float_panel2">
-        <p id="city-info"></p>
         </div>
-
         '''
-
-        # html_body = '''
-        # <!-- This example requires Tailwind CSS v2.0+ -->
-        # <div class="fixed inset-0 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-        # <div class="absolute inset-0 overflow-hidden">
-        #     <!--
-        #     Background overlay, show/hide based on slide-over state.
-
-        #     Entering: "ease-in-out duration-500"
-        #         From: "opacity-0"
-        #         To: "opacity-100"
-        #     Leaving: "ease-in-out duration-500"
-        #         From: "opacity-100"
-        #         To: "opacity-0"
-        #     -->
-        #     <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-        #     <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-        #     <!--
-        #         Slide-over panel, show/hide based on slide-over state.
-
-        #         Entering: "transform transition ease-in-out duration-500 sm:duration-700"
-        #         From: "translate-x-full"
-        #         To: "translate-x-0"
-        #         Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
-        #         From: "translate-x-0"
-        #         To: "translate-x-full"
-        #     -->
-        #     <div class="relative w-screen max-w-md">
-        #         <!--
-        #         Close button, show/hide based on slide-over state.
-
-        #         Entering: "ease-in-out duration-500"
-        #             From: "opacity-0"
-        #             To: "opacity-100"
-        #         Leaving: "ease-in-out duration-500"
-        #             From: "opacity-100"
-        #             To: "opacity-0"
-        #         -->
-        #         <div class="absolute top-0 left-0 -ml-8 pt-4 pr-2 flex sm:-ml-10 sm:pr-4">
-        #         <button type="button" class="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
-        #             <span class="sr-only">Close panel</span>
-        #             <!-- Heroicon name: outline/x -->
-        #             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        #             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        #             </svg>
-        #         </button>
-        #         </div>
-
-        #         <div class="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
-        #         <div class="px-4 sm:px-6">
-        #             <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
-        #             Panel title
-        #             </h2>
-        #         </div>
-        #         <div class="mt-6 relative flex-1 px-4 sm:px-6">
-        #             <!-- Replace with your content -->
-        #             <div class="absolute inset-0 px-4 sm:px-6">
-        #             <div class="h-full border-2 border-dashed border-gray-200" aria-hidden="true"></div>
-        #             </div>
-        #             <!-- /End replace -->
-        #         </div>
-        #         </div>
-        #     </div>
-        #     </div>
-        # </div>
-        # </div>
-        # '''
         self.map.get_root().html.add_child(Element(html_body))
 
     
