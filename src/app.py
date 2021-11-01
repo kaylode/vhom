@@ -1,14 +1,16 @@
 import os
+
 import json
 from modules import MyMap, WaterLevelAPI, BackgroundTasks, PostgreSQLDatabase
 from configs import Config
 from flask import Flask, render_template, jsonify, request
 
 ###   CONFIGURATION     ####
-app_config = Config('./configs/config.yaml')
+app_config = Config('configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
 db_config = app_config.database
+server_config = app_config.server
 
 ###     INITIALIZE FLASK        ###
 app = Flask(__name__, 
@@ -22,6 +24,10 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 @app.route('/')
 def map():
     folium_map = MyMap(map_config)
+
+    if not os.path.exists(map_config['template_dir']):
+        os.mkdir(map_config['template_dir'])
+
     folium_map.save_html(os.path.join(map_config['template_dir'],"index.html"))
     return render_template("index.html")
 
@@ -100,5 +106,9 @@ if __name__ == '__main__':
 
     # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
     # thread.start()
-    app.run(debug=True)
+    # app.run(debug=True)
+
+    app.run(
+        host=server_config['host'], port=server_config['port'], threaded=True
+    )    
     # thread.break_loop()
