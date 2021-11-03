@@ -31,6 +31,14 @@ def map():
     folium_map.save_html(os.path.join(map_config['template_dir'],"index.html"))
     return render_template("index.html")
 
+# @app.route('/info')
+# def info():
+#     return render_template("info.html")
+
+# @app.route('/contact')
+# def contact():
+#     return render_template("contact.html")
+
 @app.route('/data')
 def data():
     plot_type = request.args.get('type', default = 'hourly', type = str)
@@ -52,7 +60,7 @@ def requests():
     
     data = API.crawl_data(
         camera_ids=['tvmytho', 'tvlongdinh'],
-        from_date='2021-10-27T00:00:00',
+        from_date='2021-10-27 00:00:00',
     )
 
     try:
@@ -104,11 +112,10 @@ if __name__ == '__main__':
 
     ## Start Flask App
 
-    # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
-    # thread.start()
-    # app.run(debug=True)
+    thread = BackgroundTasks(API, DATABASE, run_every_sec=30*60)
+    thread.start()
 
     app.run(
-        host=server_config['host'], port=server_config['port'], threaded=True
+        host=server_config['host'], port=server_config['port'], use_reloader=False, debug=True
     )    
-    # thread.break_loop()
+    thread.break_loop()

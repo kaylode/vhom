@@ -18,5 +18,5 @@ database:
   section: "postgresql"
 
 server:
-  host: 0.0.0.0
+  host: 192.168.100.9
   port: 5000
