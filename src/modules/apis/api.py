@@ -82,13 +82,13 @@ class WaterLevelAPI:
         assert type in ['hourly', 'daily', 'monthly']
 
         # Starting date
-        from_date = datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S')
+        from_date = datetime.strptime(from_date, '%Y-%m-%d %H:%M:%S')
 
         # Ending date, if to_date is None, get current date
         if to_date is None:
             to_date = datetime.now()
         else:
-            to_date = datetime.strptime(to_date, '%Y-%m-%dT%H:%M:%S')
+            to_date = datetime.strptime(to_date, '%Y-%m-%d %H:%M:%S')
 
         # Initialize datetime iterations
         if type == 'hourly':

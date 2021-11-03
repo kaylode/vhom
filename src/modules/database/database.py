@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2 import sql
 import pandas as pd
-from configparser import ConfigParser
+from configparser import ConfigParser, Error
 
 class PostgreSQLDatabase:
     """
@@ -132,7 +132,7 @@ class PostgreSQLDatabase:
  
         return row
     
-    def _crawl_data_on_daily(self, api, camera_ids, lasted_date, step=0.5):
+    def _crawl_data_on_daily(self, table_name, api, camera_ids, lasted_date, step=0.5):
         """
         Crawl data from API server then save to database
         """
@@ -142,8 +142,9 @@ class PostgreSQLDatabase:
             step = step
         )
         try:
-            response = self._save_data_to_db(data)
-        except:
+            response = self._save_data_to_db(data, table_name)
+        except Error as e:
+            print(e)
             response = {
                 "status": 404,
                 "reponse": "Failed to save"
@@ -229,7 +230,7 @@ class PostgreSQLDatabase:
             self.connect()
 
         dict_iter = zip(*data.values())
-        
+        # try:
         for values in dict_iter:
 
             # Check if row is already existed
@@ -247,6 +248,9 @@ class PostgreSQLDatabase:
 
         # Confirm updating database
         self.connection.commit()
+        # except Error as e:
+        #     print(e)
+        #     self.connection.rollback()
         
         return {
             "status": 202,
@@ -270,7 +274,36 @@ class PostgreSQLDatabase:
         
         self.cursor.execute(command)
         timestamp = self.cursor.fetchone()[0]
-        return timestamp
+
+        if timestamp is None:
+            timestamp = self._get_yesterdate()
+        
+        return str(timestamp)
+
+    def _get_average_height(self, table_name, from_date, to_date=None, step=1):
+        """
+        Get average height
+        """
+        pass
+
+    def _get_highest_height(self, table_name, from_date, to_date=None, step=1):
+        """
+        Get highest height
+        """
+        pass
+
+    
+
+    def _get_yesterdate(self):
+        """
+        Get system the day before today.
+        """
+        from datetime import datetime, timedelta
+        now = datetime.now()
+        delta = timedelta(days = 1)
+        yesterday = now - delta
+        return yesterday.strftime('%Y-%m-%d %H:%M:%S')
+        
 
     def __del__(self):
         """
