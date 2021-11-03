@@ -2,12 +2,11 @@ import os
 
 import json
 from modules import MyMap, WaterLevelAPI, BackgroundTasks, PostgreSQLDatabase
-from configs import Config, ConfigDict
+from configs import Config
 from flask import Flask, render_template, jsonify, request
 
 ###   CONFIGURATION     ####
-# app_config = Config('configs/config.yaml')
-app_config = ConfigDict('configs/config.json')
+app_config = Config('configs/config.yaml')
 map_config = app_config.map
 api_config = app_config.api
 db_config = app_config.database

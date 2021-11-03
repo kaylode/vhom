@@ -1,1 +1,1 @@
-from .config import Config, ConfigDict
+from .config import Config
