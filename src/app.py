@@ -2,11 +2,12 @@ import os
 
 import json
 from modules import MyMap, WaterLevelAPI, BackgroundTasks, PostgreSQLDatabase
-from configs import Config
+from configs import Config, ConfigDict
 from flask import Flask, render_template, jsonify, request
 
 ###   CONFIGURATION     ####
-app_config = Config('configs/config.yaml')
+# app_config = Config('configs/config.yaml')
+app_config = ConfigDict('configs/config.json')
 map_config = app_config.map
 api_config = app_config.api
 db_config = app_config.database
@@ -31,17 +32,16 @@ def map():
     folium_map.save_html(os.path.join(map_config['template_dir'],"index.html"))
     return render_template("index.html")
 
-# @app.route('/info')
-# def info():
-#     return render_template("info.html")
+@app.route('/info')
+def info():
+    return render_template("info.html")
 
-# @app.route('/contact')
-# def contact():
-#     return render_template("contact.html")
+@app.route('/contact')
+def contact():
+    return render_template("contact.html")
 
 @app.route('/data')
 def data():
-    plot_type = request.args.get('type', default = 'hourly', type = str)
     camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
 
     DATABASE._convert_db_to_graph(
@@ -54,6 +54,27 @@ def data():
 
     json_graph = json.load(open(map_config['vega_chart'], encoding='utf-8'))
     return jsonify(json_graph)
+
+
+@app.route('/stat')
+def stat():
+    camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
+
+    result_dict = {}
+    for reading in ['reading1', 'reading2']:
+        reading_dict = {}
+        for aggr in ['min', 'max', 'avg']:
+            value = DATABASE._get_aggregated_value(
+                table_name='waterlevel',
+                camera_id = camera_id,
+                column=reading,
+                aggr=aggr
+            )
+
+            reading_dict[aggr] = round(float(value))
+        result_dict[reading] = reading_dict
+
+    return jsonify(result_dict)
 
 @app.route('/request')
 def requests():

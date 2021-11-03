@@ -55,10 +55,12 @@ class MyMap:
                 'Vĩ độ': str(lat),
             }
 
+            tooltip_str = f'<b>Trạm thủy văn</b>: {name}<br><b>Kinh độ</b>: {long} <br> <b>Vĩ độ</b>: {lat}'
+
             marker = OnClickMarker(
                 name=name,
                 location=[lat, long],
-                popup=name,
+                tooltip=tooltip_str,
                 icon=get_icon(icon, icon_color='blue'),
                 on_click="onMarkerClick",
                 on_click_data=marker_data)
@@ -127,8 +129,8 @@ class MyMap:
 						<!-- Primary Navbar items -->
 						<div class="md:flex items-center space-x-16">
 							<a href="#" class="py-4 px-2 text-green-300 border-b-4 border-green-500 font-semibold text-2xl">Trang chủ</a>
-							<a href="#" class="py-4 px-2 text-white font-semibold hover:text-green-200 transition duration-300 text-2xl">Thông tin dự án</a>
-							<a href="#" class="py-4 px-2 text-white font-semibold hover:text-green-200 transition duration-300 text-2xl">Liên hệ</a>
+							<a href="./info" class="py-4 px-2 text-white font-semibold hover:text-green-200 transition duration-300 text-2xl">Thông tin dự án</a>
+							<a href="./contact" class="py-4 px-2 text-white font-semibold hover:text-green-200 transition duration-300 text-2xl">Liên hệ</a>
 						</div>
 					</div>
 					<!-- Secondary Navbar items
@@ -141,14 +143,15 @@ class MyMap:
 		</nav>
 
         <div>
-
-            <div id="city-info-box" class="info_float2 bg-red-100 ring ring-red-600 ring-offset-4 ring-offset-red-100">
-                <p id="city-info" class="py-4">s</p>
+            <!--
+            <div id="city-info-box" class="info_float2 bg-red-100 ring ring-red-600 ring-offset-4 ring-offset-red-100 transform transition ease-in-out duration-500 sm:duration-700 translate-y-full">
+                <p id="city-info" class="py-2"></p>
             </div>
+            -->
 
             <div id="weather-info-box" class="font-sans text-2xl text-center info_float bg-green-100 ring ring-green-600 ring-offset-4 ring-offset-green-100">
-                <p id="date" class="pt-6"></p>
-                <p id="time" class="py-2 text-5xl"></p>
+                <p id="date" class="pt-2"></p>
+                <p id="time" class="text-5xl"></p>
             </div>
         </div>
 
@@ -177,7 +180,7 @@ class MyMap:
                 From: "translate-x-0"
                 To: "translate-x-full"
             -->
-            <div id="sliding_anim" class="relative w-screen max-w-3xl border-l-2 border-black border-opacity-20 transform transition ease-in-out duration-500 sm:duration-700 translate-x-full" >
+            <div id="sliding_anim" class="shadow-4xl relative w-screen max-w-3xl border-l-2 border-black border-opacity-20 transform transition ease-in-out duration-500 sm:duration-700 translate-x-full" >
                 <!--
                 Close button, show/hide based on slide-over state.
 
@@ -188,7 +191,7 @@ class MyMap:
                     From: "opacity-100"
                     To: "opacity-0"
                 -->
-                <div class="rounded-l-3xl border-l-2 border-black border-opacity-50 bg-white absolute top-1/2 -left-1.5 -ml-8 flex sm:-ml-10 sm:pr-4">
+                <div class="shadow-4xl rounded-l-3xl border-l-2 border-black border-opacity-50 bg-white absolute top-1/2 -left-1.5 -ml-8 flex sm:-ml-10 sm:pr-4">
                 <button id="close" type="button" class="pl-2 h-20 w-6 rounded-xl text-red-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
                     <span class="sr-only">Đóng</span>
                     <img id="close_arrow" src="https://cdn-icons-png.flaticon.com/512/50/50621.png" alt="double_arrow" width="50" height="100">
@@ -205,16 +208,34 @@ class MyMap:
                 <div class="mt-6 relative flex-1 divide-y-4 divide-yellow-500">
                     <!-- Replace with your content -->
                     <div id="vis"></div>
-                    <!--
-                    <div id="statistic" class="text-9xl relative font-sans pt-10 grid grid-cols-3 gap-y-14">
-                        <div id="min-level1">11cm</div>
-                        <div id="max-level1">211cm</div>
-                        <div id="avg-level1">3cm</div>
+                    
+                    <div id="statistic" class="relative font-sans pt-10 grid grid-cols-3 gap-y-14">
+                        <div>
+                            <span id="min-level1" class="text-8xl">11</span><br>
+                            <span class="text-xl">Reading 1 thấp nhất</span>
+                        </div>
+                        <div>
+                            <span id="max-level1" class="text-8xl">11</span><br>
+                            <span class="text-xl">Reading 1 cao nhất</span>
+                        </div>
+                        <div>
+                            <span id="avg-level1" class="text-8xl">11</span><br>
+                            <span class="text-xl">Reading 1 trung bình</span>
+                        </div>
 
-                        <div id="min-level2">4cm</div>
-                        <div id="max-level2">5cm</div>
-                        <div id="avg-level2">6cm</div>
-                    </div> -->
+                        <div>
+                            <span id="min-level2" class="text-8xl">11</span><br>
+                            <span class="text-xl">Reading 2 thấp nhất</span>
+                        </div>
+                        <div>
+                            <span id="max-level2" class="text-8xl">11</span><br>
+                            <span class="text-xl">Reading 2 cao nhất</span>
+                        </div>
+                        <div>
+                            <span id="avg-level2" class="text-8xl">11</span><br>
+                            <span class="text-xl">Reading 2 trung bình</span>
+                        </div>
+                    </div> 
                     <!-- /End replace -->
                 </div>
                 </div>

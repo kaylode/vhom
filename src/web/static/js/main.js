@@ -1,6 +1,7 @@
 // Global variables
-
-const dataUrl = new URL('http://192.168.100.9:5000/data');  // Data request URL
+const url = "192.168.100.9:5000"
+const dataUrl = new URL(`http://${url}/data`);  // Data request URL
+const statUrl = new URL(`http://${url}/stat`);  // Data request URL
 let clicked_object = null;                        // clicked marker
 var map_id = null;                                // Leaflet Map ID
 var camera_id = null;
@@ -10,13 +11,13 @@ function setDateBox() {
     let daytofweek = d.getDay();
 
     switch (daytofweek){
-        case 0: daytofweek_str = "Thứ hai"; break;
-        case 1: daytofweek_str = "Thứ ba"; break;
-        case 2: daytofweek_str = "Thứ tư"; break;
-        case 3: daytofweek_str = "Thứ năm"; break;
-        case 4: daytofweek_str = "Thứ sáu"; break;
-        case 5: daytofweek_str = "Thứ bảy"; break;
-        case 6: daytofweek_str = "Chủ nhật"; break;
+        case 0: daytofweek_str = "Chủ nhật"; break;
+        case 1: daytofweek_str = "Thứ hai"; break;
+        case 2: daytofweek_str = "Thứ ba"; break;
+        case 3: daytofweek_str = "Thứ tư"; break;
+        case 4: daytofweek_str = "Thứ năm"; break;
+        case 5: daytofweek_str = "Thứ sáu"; break;
+        case 6: daytofweek_str = "Thứ bảy"; break;
     }
 
     let day = d.getDate();
@@ -52,17 +53,6 @@ function changeMarkerIconColor(object, color) {
     return object;
 }
 
-function getContentFromDict(dict) {
-    /*
-        Get data sent with on click marker
-    */
-    var content = "";
-    for (const [key, value] of Object.entries(dict)) {
-        content = content.concat(`&emsp; <strong>${key}</strong>: ${value}<br>`);
-    }
-    return content;
-}
-
 function onMarkerClick(e, dict) {
     /*
         On click event of leaflet markers (call by server)
@@ -76,18 +66,14 @@ function onMarkerClick(e, dict) {
         btn.src="https://cdn-icons-png.flaticon.com/512/50/50621.png";
     }
 
-    document.getElementById("city-info-box").style.display = 'block';
-
-
     // Set camera id
     camera_id = dict['Camera id'];
 
     // Add VEGA plot
     getVEGAPlot(dataUrl, '#vis', 'hourly');
 
-    // Add city info
-    content = getContentFromDict(dict);
-    setContentText('city-info', content);
+    // Static plot
+    setStatistic();
 
     // Turn off current clicked marker, color new marker
     if (clicked_object) {
@@ -118,6 +104,34 @@ function onCloseClick(){
 
 }
 
+function setStatistic() {
+    var min1 = document.getElementById("min-level1");
+    var max1 = document.getElementById("max-level1");
+    var avg1 = document.getElementById("avg-level1");
+    var min2 = document.getElementById("min-level2");
+    var max2 = document.getElementById("max-level2");
+    var avg2 = document.getElementById("avg-level2");
+
+    statDict = getStatistic(statUrl);
+    statDict = JSON.parse(statDict);
+    min1.innerHTML = statDict['reading1']['min'];
+    max1.innerHTML = statDict['reading1']['max'];
+    avg1.innerHTML = statDict['reading1']['avg'];
+    min2.innerHTML = statDict['reading2']['min'];
+    max2.innerHTML = statDict['reading2']['max'];
+    avg2.innerHTML = statDict['reading2']['avg'];
+}
+
+function getStatistic(url) {
+    /*
+        Send get request and plot VEGA
+    */
+    url.searchParams.set('cameraId', camera_id);
+    response = httpGet(url);
+    return response;
+}
+
+
 function getVEGAPlot(url, id, type) {
     /*
         Send get request and plot VEGA
@@ -140,21 +154,14 @@ function visualization(div, json_data){
     vegaEmbed(div, json_data);
 }
 
-function onMapClick() {
-    var element = document.getElementById("sliding_anim");
-    if(element.classList.contains("translate-x-full")){
-        element.classList.remove("translate-x-full");
-        element.classList.add("translate-x-0");
-        btn.src="https://cdn-icons-png.flaticon.com/512/50/50621.png";
-    }
-
-    document.getElementById("city-info-box").style.display = 'none';
-}
-
 window.onload = function(){
     /*
         On load window functions
     */
+
+    // fetch("/web/static/config.json")
+    //     .then(response => response.json())
+    //     .then(json => console.log(json));
 
     // Find map id
     map = document.getElementsByClassName('folium-map')[0]
@@ -162,6 +169,7 @@ window.onload = function(){
 
     // Set on click event for close button
     document.getElementById('close').onclick = onCloseClick;
+    document.getElementById('searchtext13').size = 30;
 
     setInterval(setDateBox, 1000);
 };

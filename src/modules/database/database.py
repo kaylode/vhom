@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import sql
 import pandas as pd
+from datetime import datetime, timedelta
 from configparser import ConfigParser, Error
 
 class PostgreSQLDatabase:
@@ -280,25 +281,28 @@ class PostgreSQLDatabase:
         
         return str(timestamp)
 
-    def _get_average_height(self, table_name, from_date, to_date=None, step=1):
+    def _get_aggregated_value(self, table_name, column, camera_id, from_date=None, to_date=None, aggr='avg'):
         """
-        Get average height
+        Get average value from column
         """
-        pass
+        assert aggr in ['avg', 'max', 'min']
 
-    def _get_highest_height(self, table_name, from_date, to_date=None, step=1):
-        """
-        Get highest height
-        """
-        pass
+        if from_date is None:
+            from_date = self._get_yesterdate()
 
-    
+        if to_date is None:
+            to_date = datetime.now()
+            to_date = to_date.strftime('%Y-%m-%d %H:%M:%S')
+
+        command = f"select {aggr}({column}) from {table_name} where timestamp between '{from_date}' and '{to_date}' and camera_id = '{camera_id}'"
+        self.cursor.execute(command)
+        value = self.cursor.fetchone()[0]
+        return value    
 
     def _get_yesterdate(self):
         """
         Get system the day before today.
         """
-        from datetime import datetime, timedelta
         now = datetime.now()
         delta = timedelta(days = 1)
         yesterday = now - delta

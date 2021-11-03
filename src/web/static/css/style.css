@@ -31,25 +31,23 @@
 
 .info_float {
     position: fixed;
-    height: 10%;
+    height: 7%;
     width: 30rem;
     bottom: 0;
-    left: 10rem;
+    left: 46%;
     z-index: 502;
     margin-bottom: 3rem;
-    padding: 6;
     border-radius: 3.0rem;
 }
 
 .info_float2 {
     position: fixed;
-    height: 10%;
+    height: 7%;
     width: 30rem;
     bottom: 0;
-    left: 10rem;
+    left: 50%;
     z-index: 502;
-    margin-bottom: 14rem;
-    padding: 6;
+    margin-bottom: 18rem;
     border-radius: 3.0rem;
     display: none;
 }
