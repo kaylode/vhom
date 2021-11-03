@@ -21,7 +21,7 @@ class OnClickMarker(folium.Marker):
                 ).addTo({{ this._parent.get_name() }}).on('click', function(e){ {{ this.on_click }} (e, {{ this.on_click_data }}) });
             {% endmacro %}
             """)
-    
+
 class CustomJavaScript(folium.JavascriptLink):
     def __init__(self, url, type=None, download=False):
         super().__init__(url, download=download)

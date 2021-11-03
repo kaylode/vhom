@@ -13,10 +13,16 @@ class BackgroundTasks(threading.Thread):
         self.db = db
         self.run_every_sec = run_every_sec
         
+        ## Crawl data on initialization
+        self.start_crawling()
+        
     def run(self,*args,**kwargs):
+        """
+        Backgroud loop
+        """
         print(f'Start crawling every {self.run_every_sec} seconds')
         running_time = 0
-
+        
         # Start loop
         while self.in_loop:
 
@@ -26,11 +32,19 @@ class BackgroundTasks(threading.Thread):
 
             # Crawl all new data based on date in database
             if running_time % self.run_every_sec == 0:
-                self.db._crawl_data_on_daily(
-                    camera_ids=['tvmytho', 'tvlongdinh'], 
-                    lasted_date = self.db._get_last_date('waterlevel'),
-                    api=self.api, step=0.5
-                )
+                self.start_crawling()
+
+    def start_crawling(self):
+        """
+        Crawl data from server
+        """
+        print("Crawl data")
+        self.db._crawl_data_on_daily(
+            table_name='waterlevel',
+            camera_ids=['tvmytho', 'tvlongdinh'], 
+            lasted_date = self.db._get_last_date('waterlevel'),
+            api=self.api, step=0.5
+        )
 
     def break_loop(self):
         print("Task killed")

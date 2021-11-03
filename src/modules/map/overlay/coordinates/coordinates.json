@@ -1,0 +1,38 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "camera_id": "tvmytho",
+          "addr:city": "Mỹ Tho",
+          "addr:country": "Việt Nam",
+          "name": "Mỹ Tho"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            106.3500,
+            10.3500
+          ]
+        }
+      },
+
+      {
+        "type": "Feature",
+        "properties": {
+          "camera_id": "tvlongdinh",
+          "addr:city": "Long Định",
+          "addr:country": "Việt Nam",
+          "name": "Long Định"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            106.302,
+            10.3615
+          ]
+        }
+      }
+    ]
+}

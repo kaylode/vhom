@@ -2,7 +2,7 @@ map:
   location: [16.3, 106.72]
   zoom: 6
   overlay: "modules/map/overlay/geojson/vietnam.geojson"
-  cordinates: "modules/map/overlay/coordinates/water_provinces.csv"
+  cordinates: "modules/map/overlay/coordinates/coordinates.json"
 
   template_dir: "web/templates"
   static_dir: "web/static"
@@ -18,5 +18,5 @@ database:
   section: "postgresql"
 
 server:
-  host: 0.0.0.0
+  host: 192.168.100.9
   port: 5000

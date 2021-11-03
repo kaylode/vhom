@@ -31,9 +31,16 @@ def map():
     folium_map.save_html(os.path.join(map_config['template_dir'],"index.html"))
     return render_template("index.html")
 
+@app.route('/info')
+def info():
+    return render_template("info.html")
+
+@app.route('/contact')
+def contact():
+    return render_template("contact.html")
+
 @app.route('/data')
 def data():
-    plot_type = request.args.get('type', default = 'hourly', type = str)
     camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
 
     DATABASE._convert_db_to_graph(
@@ -47,12 +54,33 @@ def data():
     json_graph = json.load(open(map_config['vega_chart'], encoding='utf-8'))
     return jsonify(json_graph)
 
+
+@app.route('/stat')
+def stat():
+    camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
+
+    result_dict = {}
+    for reading in ['reading1', 'reading2']:
+        reading_dict = {}
+        for aggr in ['min', 'max', 'avg']:
+            value = DATABASE._get_aggregated_value(
+                table_name='waterlevel',
+                camera_id = camera_id,
+                column=reading,
+                aggr=aggr
+            )
+
+            reading_dict[aggr] = round(float(value))
+        result_dict[reading] = reading_dict
+
+    return jsonify(result_dict)
+
 @app.route('/request')
 def requests():
     
     data = API.crawl_data(
         camera_ids=['tvmytho', 'tvlongdinh'],
-        from_date='2021-10-27T00:00:00',
+        from_date='2021-10-27 00:00:00',
     )
 
     try:
@@ -104,11 +132,10 @@ if __name__ == '__main__':
 
     ## Start Flask App
 
-    # thread = BackgroundTasks(API, DATABASE, run_every_sec=30)
-    # thread.start()
-    # app.run(debug=True)
+    thread = BackgroundTasks(API, DATABASE, run_every_sec=30*60)
+    thread.start()
 
     app.run(
-        host=server_config['host'], port=server_config['port'], threaded=True
+        host=server_config['host'], port=server_config['port'], use_reloader=False, debug=True
     )    
-    # thread.break_loop()
+    thread.break_loop()

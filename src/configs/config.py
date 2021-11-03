@@ -1,4 +1,5 @@
 import yaml
+import json
 
 class Config():
     """
@@ -30,7 +31,19 @@ class Config():
             if v is not None:
                 out_dict[k] = v
         return out_dict
+
+    def __str__(self):
+        print("##########   CONFIGURATION INFO   ##########")
+        pretty(self.__dict__)
+        return '\n'
     
+    def to_dict(self):
+        out_dict = {}
+        for k,v in self.__dict__.items():
+            if v is not None:
+                out_dict[k] = v
+        return out_dict
+
 
 def config_from_dict(_dict, ignore_keys=[]):
     config = Config('./configs/configs.yaml')

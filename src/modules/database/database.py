@@ -1,7 +1,8 @@
 import psycopg2
 from psycopg2 import sql
 import pandas as pd
-from configparser import ConfigParser
+from datetime import datetime, timedelta
+from configparser import ConfigParser, Error
 
 class PostgreSQLDatabase:
     """
@@ -75,16 +76,6 @@ class PostgreSQLDatabase:
             self.connection.close()
             print('Database connection closed.')
 
-    def check_table_exist(self, table_name):
-        """
-        Check whether the table has already existed
-        """
-        comand = """select exists(select * from information_schema.tables where table_name=%(table_name)s)"""
-        self.cursor.execute(comand, {
-            'table_name': table_name
-        })
-        return bool(self.cursor.rowcount)
-
     def create_table(self, table_name, column_dict={}):
         """
         Create table in the database
@@ -95,11 +86,6 @@ class PostgreSQLDatabase:
                     'id': 'integer primary key'
                 }
         """
-
-        # Check if table name already existed
-        if self.check_table_exist(table_name):
-            print("Table exists")
-            return
 
         # Convert column dict to string
         colum_string = []
@@ -120,6 +106,7 @@ class PostgreSQLDatabase:
             self.connection.commit()
         except psycopg2.errors.DuplicateTable:
             print(f"Table {table_name} is aldreay existed")
+            self.connection.rollback()
 
     def check_row_exists(self, table_name, condition_dict):
         """
@@ -146,7 +133,7 @@ class PostgreSQLDatabase:
  
         return row
     
-    def _crawl_data_on_daily(self, api, camera_ids, lasted_date, step=0.5):
+    def _crawl_data_on_daily(self, table_name, api, camera_ids, lasted_date, step=0.5):
         """
         Crawl data from API server then save to database
         """
@@ -156,8 +143,9 @@ class PostgreSQLDatabase:
             step = step
         )
         try:
-            response = self._save_data_to_db(data)
-        except:
+            response = self._save_data_to_db(data, table_name)
+        except Error as e:
+            print(e)
             response = {
                 "status": 404,
                 "reponse": "Failed to save"
@@ -243,7 +231,7 @@ class PostgreSQLDatabase:
             self.connect()
 
         dict_iter = zip(*data.values())
-        
+        # try:
         for values in dict_iter:
 
             # Check if row is already existed
@@ -261,6 +249,9 @@ class PostgreSQLDatabase:
 
         # Confirm updating database
         self.connection.commit()
+        # except Error as e:
+        #     print(e)
+        #     self.connection.rollback()
         
         return {
             "status": 202,
@@ -284,7 +275,39 @@ class PostgreSQLDatabase:
         
         self.cursor.execute(command)
         timestamp = self.cursor.fetchone()[0]
-        return timestamp
+
+        if timestamp is None:
+            timestamp = self._get_yesterdate()
+        
+        return str(timestamp)
+
+    def _get_aggregated_value(self, table_name, column, camera_id, from_date=None, to_date=None, aggr='avg'):
+        """
+        Get average value from column
+        """
+        assert aggr in ['avg', 'max', 'min']
+
+        if from_date is None:
+            from_date = self._get_yesterdate()
+
+        if to_date is None:
+            to_date = datetime.now()
+            to_date = to_date.strftime('%Y-%m-%d %H:%M:%S')
+
+        command = f"select {aggr}({column}) from {table_name} where timestamp between '{from_date}' and '{to_date}' and camera_id = '{camera_id}'"
+        self.cursor.execute(command)
+        value = self.cursor.fetchone()[0]
+        return value    
+
+    def _get_yesterdate(self):
+        """
+        Get system the day before today.
+        """
+        now = datetime.now()
+        delta = timedelta(days = 1)
+        yesterday = now - delta
+        return yesterday.strftime('%Y-%m-%d %H:%M:%S')
+        
 
     def __del__(self):
         """

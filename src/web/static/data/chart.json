@@ -69,6 +69,13 @@
               "encoding": {
                 "color": {"type": "nominal", "field": "type"}
               }
+            },
+            {
+              "mark": {"type": "text", "align": "center", "fontWeight": 100},
+              "encoding": {
+                "text": {"field": "timestamp", "timeUnit": "hoursminutes"},
+                "y": {"value": 290}
+              }
             }
           ]
         }
