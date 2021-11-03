@@ -19,7 +19,7 @@ def get_info_from_json(path):
 
     return cordinates
 
-def get_icon(image_path=None, shadow_path=None, icon_color=None):
+def get_icon(image_path=None, icon_color=None):
     """
     Get custom icon for markers
     """
@@ -28,16 +28,12 @@ def get_icon(image_path=None, shadow_path=None, icon_color=None):
     if image_path is not None:
         icon = CustomIcon(
             image_path,
-            icon_size=(38, 95),
-            icon_anchor=(22, 94),
-            shadow_image=shadow_path,
-            shadow_size=(50, 64),
-            shadow_anchor=(4, 62),
-            popup_anchor=(-3, -76),
+            icon_size=(64, 64),
+            icon_anchor=(32, 63),
         )
     else:
         if icon_color is not None:
-            icon = folium.Icon(color=icon_color)
+            icon = folium.Icon(color=icon_color, icon='tint')
         else:
             icon = None
 

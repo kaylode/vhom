@@ -108,18 +108,50 @@ class MyMap:
     def init_body(self):
         """
         Add custom body HTML
-        """
-        
-        # html_body = '''
-        # <div class="w3-bar w3-blue">
-        #     <a href="#" class="w3-bar-item w3-mobile w3-yellow w3-middle w3-large">Vietnam Water level map</a>
-        #     <a href="#" class="w3-bar-item w3-button w3-hover-green w3-right"><i class="fa fa-search"></i></a>
-        #     <input type="text" class="w3-bar-item w3-input w3-right" placeholder="Search..">
-        #     <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-envelope"></i></a>
-        #     <a href="#" class="w3-bar-item w3-button w3-mobile w3-hover-green w3-large w3-right"><i class="fa fa-home"></i></a>
-        # </div>        
+        """ 
 
         html_body = '''
+
+        <!-- This example requires Tailwind CSS v2.0+ -->
+        <nav class="bg-gradient-to-r from-green-400 to-blue-500 shadow-lg block">
+			<div class="max-w-7xl mx-auto px-4">
+				<div class="flex justify-between">
+					<div class="flex space-x-16">
+						<div>
+							<!-- Website Logo -->
+							<a href="#" class="flex items-center py-4 px-2 hover:no-underline">
+								<img src="/web/static/assets/logo.png" alt="Logo" class="h-12 w-12 mr-2">
+								<span class="font-semibold text-yellow-200 text-4xl">Khí tượng thủy văn Việt Nam</span>
+							</a>
+						</div>
+						<!-- Primary Navbar items -->
+						<div class="md:flex items-center space-x-16">
+							<a href="#" class="py-4 px-2 text-green-300 border-b-4 border-green-500 font-semibold text-2xl">Trang chủ</a>
+							<a href="#" class="py-4 px-2 text-white font-semibold hover:text-green-200 transition duration-300 text-2xl">Thông tin dự án</a>
+							<a href="#" class="py-4 px-2 text-white font-semibold hover:text-green-200 transition duration-300 text-2xl">Liên hệ</a>
+						</div>
+					</div>
+					<!-- Secondary Navbar items
+					<div class="hidden md:flex items-center space-x-3 ">
+						<a href="" class="py-2 px-2 font-medium text-gray-500 rounded hover:bg-green-500 hover:text-white transition duration-300">Log In</a>
+						<a href="" class="py-2 px-2 font-medium text-white bg-green-500 rounded hover:bg-green-400 transition duration-300">Sign Up</a>
+					</div> -->
+				</div>
+			</div>
+		</nav>
+
+        <div>
+
+            <div id="city-info-box" class="info_float2 bg-red-100 ring ring-red-600 ring-offset-4 ring-offset-red-100">
+                <p id="city-info" class="py-4">s</p>
+            </div>
+
+            <div id="weather-info-box" class="font-sans text-2xl text-center info_float bg-green-100 ring ring-green-600 ring-offset-4 ring-offset-green-100">
+                <p id="date" class="pt-6"></p>
+                <p id="time" class="py-2 text-5xl"></p>
+            </div>
+        </div>
+
         <!-- This example requires Tailwind CSS v2.0+ -->
         <div id="float_panel" class="fixed inset-0 overflow-hidden div_float w-0" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
         <div class="absolute inset-0 overflow-hidden">
@@ -134,7 +166,7 @@ class MyMap:
                 To: "opacity-0"
             -->
             <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <div id="sliding_anim" class="fixed inset-y-0 right-0 pl-10 max-w-full flex transform transition ease-in-out duration-500 sm:duration-700 translate-x-full">
+            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
             <!--
                 Slide-over panel, show/hide based on slide-over state.
 
@@ -145,7 +177,7 @@ class MyMap:
                 From: "translate-x-0"
                 To: "translate-x-full"
             -->
-            <div class="relative w-screen max-w-3xl" >
+            <div id="sliding_anim" class="relative w-screen max-w-3xl border-l-2 border-black border-opacity-20 transform transition ease-in-out duration-500 sm:duration-700 translate-x-full" >
                 <!--
                 Close button, show/hide based on slide-over state.
 
@@ -156,26 +188,33 @@ class MyMap:
                     From: "opacity-100"
                     To: "opacity-0"
                 -->
-                <div class="absolute top-0 left-12 -ml-8 pt-4 pr-2 flex sm:-ml-10 sm:pr-4">
-                <button id="close" type="button" class="rounded-md text-red-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
+                <div class="rounded-l-3xl border-l-2 border-black border-opacity-50 bg-white absolute top-1/2 -left-1.5 -ml-8 flex sm:-ml-10 sm:pr-4">
+                <button id="close" type="button" class="pl-2 h-20 w-6 rounded-xl text-red-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
                     <span class="sr-only">Đóng</span>
-                    <!-- Heroicon name: outline/x -->
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <img id="close_arrow" src="https://cdn-icons-png.flaticon.com/512/50/50621.png" alt="double_arrow" width="50" height="100">
+
                 </button>
                 </div>
 
-                <div class="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
-                <div class="px-4 sm:px-6">
-                    <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">
+                <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                <div class="bg-green-600 px-4 sm:px-6">
+                    <h2 class="font-bold text-3xl font-sans font-large text-gray-900" id="slide-over-title">
                     Thông tin khí tượng thủy văn
                     </h2>
                 </div>
-                <div class="mt-6 relative flex-1">
+                <div class="mt-6 relative flex-1 divide-y-4 divide-yellow-500">
                     <!-- Replace with your content -->
                     <div id="vis"></div>
-                    <div id="city-info"></div>
+                    <!--
+                    <div id="statistic" class="text-9xl relative font-sans pt-10 grid grid-cols-3 gap-y-14">
+                        <div id="min-level1">11cm</div>
+                        <div id="max-level1">211cm</div>
+                        <div id="avg-level1">3cm</div>
+
+                        <div id="min-level2">4cm</div>
+                        <div id="max-level2">5cm</div>
+                        <div id="avg-level2">6cm</div>
+                    </div> -->
                     <!-- /End replace -->
                 </div>
                 </div>
