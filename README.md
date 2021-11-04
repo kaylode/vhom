@@ -50,3 +50,4 @@ python app.py
 - https://github.com/python-visualization/folium
 - https://vega.github.io/vega-lite/examples/
 - https://www.postgresqltutorial.com/postgresql-python/
+- https://tailwindcss.com/docs
