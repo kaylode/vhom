@@ -1,4 +1,14 @@
-# Vietnam Hydrometeorology Observation Map
+# <p align="center"> Vietnam Hydrometeorology Observation Map </p>
+
+
+<p align="center">
+<a href="#"><img src="https://img.shields.io/badge/Folium-12993b?style=for-the-badge&logo=folium&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Flask-323232?style=for-the-badge&logo=flask&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" /></a>
+</p>
+
+----------------------------------
 
 ## **Installation**
 
