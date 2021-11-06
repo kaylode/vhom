@@ -1,5 +1,9 @@
 # <p align="center"> Vietnam Hydrometeorology Observation Map </p>
 
+<div align="center">
+<img width="600" alt="screen" src="assets/demo1.png">
+<img width="600" alt="screen" src="assets/demo2.png">
+ </div>
 
 <p align="center">
 <a href="#"><img src="https://img.shields.io/badge/Folium-12993b?style=for-the-badge&logo=folium&logoColor=white"/></a>
@@ -10,9 +14,7 @@
 
 ----------------------------------
 
-|  |  |
-|:-------------------------:|:-------------------------:|
-|<img width="900" alt="screen" src="assets/demo1.png"> | <img width="900" alt="screen" src="assets/demo2.png"> |
+
 
 
 ## **Installation**
