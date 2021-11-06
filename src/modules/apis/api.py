@@ -1,8 +1,10 @@
 import requests
 from datetime import datetime
 from tqdm import tqdm
-
 from .utils import hourly_it, daily_it
+
+from modules.logger import LoggerManager
+LOGGER = LoggerManager.init_logger(__name__)
 
 class WaterLevelAPI:
     """
@@ -35,8 +37,12 @@ class WaterLevelAPI:
         # Format parameters to request template
         url = self.host_url + str.format(self.request_template, **params)
 
-        # Send GET request to fetch data
-        data = requests.get(url).json()
+        try:
+            # Send GET request to fetch data
+            data = requests.get(url).json()
+        except Exception as e:
+            LOGGER.error(e)
+            raise Exception()
         
         # Process response and return data in right format
         extracted_data = self._data_extraction(data)
@@ -90,12 +96,6 @@ class WaterLevelAPI:
         else:
             to_date = datetime.strptime(to_date, '%Y-%m-%d %H:%M:%S')
 
-        # Initialize datetime iterations
-        if type == 'hourly':
-            time_iter = hourly_it(from_date, to_date, step)
-        if type == 'daily':
-            time_iter = daily_it(from_date, to_date, step)
-
         result_dict = {
             'camera_id': [], 
             'timestamp': [], 
@@ -105,6 +105,13 @@ class WaterLevelAPI:
 
         # For each camera, do request
         for camera_id in camera_ids:
+
+            # Initialize datetime iterations
+            if type == 'hourly':
+                time_iter = hourly_it(from_date, to_date, step)
+            if type == 'daily':
+                time_iter = daily_it(from_date, to_date, step)
+            
             for time in tqdm(time_iter):
 
                 # Convert timestamp to right format for API request

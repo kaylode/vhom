@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 src/web/static/data/graph.csv
 src/web/templates/index.html
+src/modules/logger/*.log

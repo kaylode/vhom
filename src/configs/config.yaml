@@ -8,6 +8,7 @@ map:
   static_dir: "web/static"
   icon_path: null
 
+  graph_csv:  "web/static/data/graph.csv"
   vega_chart: "web/static/data/chart.json"
 
 api:

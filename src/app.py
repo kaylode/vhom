@@ -1,9 +1,10 @@
 import os
-
 import json
-from modules import MyMap, WaterLevelAPI, BackgroundTasks, PostgreSQLDatabase
+from modules import MyMap, WaterLevelAPI, BackgroundTasks, PostgreSQLDatabase, LoggerManager
 from configs import Config
 from flask import Flask, render_template, jsonify, request
+
+LOGGER = LoggerManager.init_logger('Flask')
 
 ###   CONFIGURATION     ####
 app_config = Config('configs/config.yaml')
@@ -17,6 +18,7 @@ app = Flask(__name__,
     template_folder=map_config['template_dir'], 
     static_url_path='/'+map_config['static_dir'], 
     static_folder=map_config['static_dir'])
+
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
@@ -43,13 +45,15 @@ def contact():
 def data():
     camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
 
+    LOGGER.info(f"Generating graph for camera {camera_id}...")
     DATABASE._convert_db_to_graph(
-        graph_csv='./web/static/data/graph.csv',
+        graph_csv=map_config['graph_csv'],
         table_name='waterlevel',
         filter_dict={
             'camera_id': camera_id
         }
     )
+    LOGGER.info(f"Graph generated")
 
     json_graph = json.load(open(map_config['vega_chart'], encoding='utf-8'))
     return jsonify(json_graph)
@@ -58,6 +62,8 @@ def data():
 @app.route('/stat')
 def stat():
     camera_id = request.args.get('cameraId', default = 'tvmytho', type = str)
+
+    LOGGER.info(f"Calculating statistic for camera {camera_id}")
 
     result_dict = {}
     for reading in ['reading1', 'reading2']:
@@ -73,23 +79,20 @@ def stat():
             reading_dict[aggr] = round(float(value))
         result_dict[reading] = reading_dict
 
+    LOGGER.info(f"Statistic calculated")
     return jsonify(result_dict)
 
 @app.route('/request')
 def requests():
     
+    LOGGER.info(f"Crawling data")
     data = API.crawl_data(
         camera_ids=['tvmytho', 'tvlongdinh'],
         from_date='2021-10-27 00:00:00',
     )
+    LOGGER.info(f"Data crawled")
 
-    try:
-        response = DATABASE._save_data_to_db(data, table_name='waterlevel')
-    except:
-        response = {
-            "status": 404,
-            "reponse": "Failed to save"
-        }
+    response = DATABASE._save_data_to_db(data, table_name='waterlevel')
 
     return jsonify(response)
 

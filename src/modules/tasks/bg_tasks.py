@@ -1,5 +1,8 @@
 import threading
 import time
+from modules.logger import LoggerManager
+
+LOGGER = LoggerManager.init_logger(__name__)
 
 class BackgroundTasks(threading.Thread):
     """
@@ -20,7 +23,7 @@ class BackgroundTasks(threading.Thread):
         """
         Backgroud loop
         """
-        print(f'Start crawling every {self.run_every_sec} seconds')
+        LOGGER.info(f'Start crawling every {self.run_every_sec} seconds')
         running_time = 0
         
         # Start loop
@@ -38,14 +41,15 @@ class BackgroundTasks(threading.Thread):
         """
         Crawl data from server
         """
-        print("Crawl data")
+        LOGGER.info("Crawling data...")
         self.db._crawl_data_on_daily(
             table_name='waterlevel',
             camera_ids=['tvmytho', 'tvlongdinh'], 
             lasted_date = self.db._get_last_date('waterlevel'),
             api=self.api, step=0.5
         )
+        LOGGER.info("Data crawled...")
 
     def break_loop(self):
-        print("Task killed")
+        LOGGER.info("Task killed")
         self.in_loop = False
