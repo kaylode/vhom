@@ -1,37 +1,19 @@
 # Vietnam Hydrometeorology Observation Map
 
-## **Installation**
+|  |  |
+|:-------------------------:|:-------------------------:|
+|<img width="450" alt="screen" src="assets/demo1.png"> | <img width="450" alt="screen" src="assets/demo2.png"> |
 
+
+## **Installation**
 - Download and install postgresql from https://www.postgresql.org/download/
 - git clone https://github.com/kaylode/web-based-map.git
 - cd web-based-map
 - pip install -r requirements.txt
 
 ## **How to run**
-
-### **Initialize database**
-- This repo uses PostgreSQL as Database server 
-
-- Connect to PostgreSQL server:
-```
-psql -U <username>;
-```
-
-- Create database: 
-```
-create database <tablename>;
-```
-
-- Create table: 
-```
-\c <tablename> # connect to database
-create table waterlevel;
-```
-
-- Check if table exists:
-```
-\dt
-```
+### **Setup database**
+- Follow [this instruction](./src/modules/database/README.md)
 
 ### **Start server**
 - Configure the server using ```configs/configs.yaml```
@@ -41,10 +23,7 @@ cd src
 python app.py
 ```
 - Go to host: http://192.168.100.9:5000/, server will automatically request data from API server when initiated
-
-## **Visualization**
-![](./assets/demo1.png)
-![](./assets/demo2.png)
+- Log files will be saved in ```modules/logger/app.log```
 
 ## **References**
 - https://github.com/python-visualization/folium

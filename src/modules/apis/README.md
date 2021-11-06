@@ -1,6 +1,14 @@
 # Water Level API
 
-- To get data, call API:
+
+### Streaming from live camera
+```
+http://157.245.207.139:8000/{camera_id}
+```
+- Parameters:
+  - camera_id = {tvlongdinh, tvmytho}
+
+### To get data, call API:
 ```
 http://157.245.207.139:8000/api/{camera_id}/history?time={datetime}
 ```
@@ -9,7 +17,7 @@ http://157.245.207.139:8000/api/{camera_id}/history?time={datetime}
   - datetime = "%Y-%m-%d-%H-%M-%S"
     
 
-- Json returns
+### Json returns
 ```
 {
   "CameraId": {camera_id},
