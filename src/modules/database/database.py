@@ -2,7 +2,10 @@ import psycopg2
 from psycopg2 import sql
 import pandas as pd
 from datetime import datetime, timedelta
-from configparser import ConfigParser, Error
+from configparser import ConfigParser
+from modules.logger import LoggerManager
+
+LOGGER = LoggerManager.init_logger(__name__)
 
 class PostgreSQLDatabase:
     """
@@ -33,9 +36,8 @@ class PostgreSQLDatabase:
             for param in params:
                 db[param[0]] = param[1]
         else:
-            raise Exception(
-                "Section {0} not found in the {1} file".format(section, filename)
-            )
+            LOGGER.error("Section {0} not found in the {1} file".format(section, filename))
+            raise Exception()
 
         return db
 
@@ -49,22 +51,21 @@ class PostgreSQLDatabase:
         self.connection = None
         try:
             # connect to the PostgreSQL server
-            print('Connecting to the PostgreSQL database...')
+            LOGGER.info('Connecting to the PostgreSQL database...')
             self.connection = psycopg2.connect(**self.config)
             
             # create a cursor
             self.cursor = self.connection.cursor()
             
             # execute a statement
-            print('PostgreSQL database version:')
             self.cursor.execute('SELECT version()')
-
-            # display the PostgreSQL database server version
             db_version = self.cursor.fetchone()
-            print(db_version)
+
+            # Logging
+            LOGGER.info(f'PostgreSQL database version: {db_version}')
 
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            LOGGER.error(error)
 
     def close(self):
         """
@@ -74,8 +75,8 @@ class PostgreSQLDatabase:
             self.cursor.close()
         if self.connection is not None:
             self.connection.close()
-            print('Database connection closed.')
-
+            LOGGER.info('Database connection closed.')
+                    
     def create_table(self, table_name, column_dict={}):
         """
         Create table in the database
@@ -105,7 +106,7 @@ class PostgreSQLDatabase:
             self.cursor.execute(command)
             self.connection.commit()
         except psycopg2.errors.DuplicateTable:
-            print(f"Table {table_name} is aldreay existed")
+            LOGGER.info(f"Table {table_name} is already existed")
             self.connection.rollback()
 
     def check_row_exists(self, table_name, condition_dict):
@@ -127,9 +128,13 @@ class PostgreSQLDatabase:
             select exists(select 1 from {table_name} where {colum_string})
         """
 
-        # Execute command
-        self.cursor.execute(command)
-        row = self.cursor.fetchone()[0]
+        try:
+            # Execute command
+            self.cursor.execute(command)
+            row = self.cursor.fetchone()[0]
+        except Exception as e:
+            LOGGER.error(e)
+            return None
  
         return row
     
@@ -142,14 +147,7 @@ class PostgreSQLDatabase:
             from_date = lasted_date,
             step = step
         )
-        try:
-            response = self._save_data_to_db(data, table_name)
-        except Error as e:
-            print(e)
-            response = {
-                "status": 404,
-                "reponse": "Failed to save"
-            }
+        response = self._save_data_to_db(data, table_name)
         return response
 
     def _db_to_json(self, rows):
@@ -206,9 +204,13 @@ class PostgreSQLDatabase:
                 select * from {table_name}
             """
         
-        # Execute command
-        self.cursor.execute(command)
-        rows = self.cursor.fetchall()
+        try:
+            # Execute command
+            self.cursor.execute(command)
+            rows = self.cursor.fetchall()
+        except Exception as e:
+            LOGGER.error(e)
+            rows = []
 
         # Convert database to json format, then save as csv to visualize VEGA plot
         graph_json = self._db_to_json(rows)
@@ -231,31 +233,37 @@ class PostgreSQLDatabase:
             self.connect()
 
         dict_iter = zip(*data.values())
-        # try:
-        for values in dict_iter:
 
-            # Check if row is already existed
-            if self.check_row_exists(table_name, condition_dict={
-                    'camera_id': values[0],
-                    'timestamp': values[1],
-                }):
-                continue
-            
-            # Make command
-            command = sql.SQL("""insert into {}(camera_id, timestamp, reading1, reading2) values(%s, %s, %s, %s)""").format(sql.Identifier(table_name))
+        try:
+            for values in dict_iter:
 
-            # Execute command
-            self.cursor.execute(command, [*values])
+                # Check if row is already existed
+                if self.check_row_exists(table_name, condition_dict={
+                        'camera_id': values[0],
+                        'timestamp': values[1],
+                    }):
+                    continue
+                
+                # Make command
+                command = sql.SQL("""insert into {}(camera_id, timestamp, reading1, reading2) values(%s, %s, %s, %s)""").format(sql.Identifier(table_name))
 
-        # Confirm updating database
-        self.connection.commit()
-        # except Error as e:
-        #     print(e)
-        #     self.connection.rollback()
+                # Execute command
+                self.cursor.execute(command, [*values])
+
+            # Confirm updating database
+            self.connection.commit()
+        except Exception as e:
+            LOGGER.error(e)
+            self.connection.rollback()
+
+            return {
+                "status": 404,
+                "reponse": "Database failed to update"
+            }
         
         return {
             "status": 202,
-            "reponse": "Successfully saved"
+            "reponse": "Database saved successfully"
         }
 
     def _get_last_date(self, table_name, filter_dict=None):
@@ -273,8 +281,12 @@ class PostgreSQLDatabase:
         else:
             command = sql.SQL("""select max(timestamp) from {}""").format(sql.Identifier(table_name))
         
-        self.cursor.execute(command)
-        timestamp = self.cursor.fetchone()[0]
+        try:
+            self.cursor.execute(command)
+            timestamp = self.cursor.fetchone()[0]
+        except Exception as e:
+            LOGGER.error(e)
+            timestamp = self._get_yesterdate()
 
         if timestamp is None:
             timestamp = self._get_yesterdate()
@@ -295,8 +307,16 @@ class PostgreSQLDatabase:
             to_date = to_date.strftime('%Y-%m-%d %H:%M:%S')
 
         command = f"select {aggr}({column}) from {table_name} where timestamp between '{from_date}' and '{to_date}' and camera_id = '{camera_id}'"
-        self.cursor.execute(command)
-        value = self.cursor.fetchone()[0]
+    
+        try:
+            self.cursor.execute(command)
+            value = self.cursor.fetchone()[0]
+            if value is None:
+                raise ValueError("No columns found")
+        except Exception as e:
+            LOGGER.error(e)
+            value = 0
+            
         return value    
 
     def _get_yesterdate(self):
