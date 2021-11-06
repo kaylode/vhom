@@ -2,7 +2,7 @@
 
 |  |  |
 |:-------------------------:|:-------------------------:|
-|<img width="450" alt="screen" src="assets/demo1.png"> | <img width="450" alt="screen" src="assets/demo2.png"> |
+|<img width="900" alt="screen" src="assets/demo1.png"> | <img width="900" alt="screen" src="assets/demo2.png"> |
 
 
 ## **Installation**
