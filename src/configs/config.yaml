@@ -12,7 +12,7 @@ map:
   vega_chart: "web/static/data/chart.json"
 
 api:
-  host: http://157.245.207.139:8000/api/
+  host: <deleted>
 
 database:
   filename: "modules/database/config/postgresql.ini"
